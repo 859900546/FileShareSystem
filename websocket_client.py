@@ -171,8 +171,11 @@ class delete_file(QThread):
 
     def run(self):
         ws.send(f'DELfile:,{self.name}')
-        s = ws.recv()
-        print(s)
+        try:
+            s = ws.recv()
+            print(s)
+        except Exception as e:
+            print(e)
 
 
 def get_file_serverName(Relative_path: str):

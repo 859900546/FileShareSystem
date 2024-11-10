@@ -164,11 +164,11 @@ def delete_root():
 
 
 # 新建子结点
-def new_folder(f_folder: folder.folder, name: str, check_file: int) -> folder.folder or int:
+def new_folder(f_folder: folder.folder, name: str, check_file: int, size: int = 0, date: str = "") -> folder.folder or int:
     if f_folder is None:
         return -1
-    temp = folder.folder(name=name, check_file=check_file, father_folder=f_folder, son_folder=[], date=get_date(),
-                         size=(0 if not check_file else random.randint(1, 100)))
+    temp = folder.folder(name=name, check_file=check_file, father_folder=f_folder, son_folder=[], date=date,
+                         size=size)
     # print(len(temp.son_folder))
     f_folder.set_son(temp)
     return temp

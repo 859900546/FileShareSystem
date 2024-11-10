@@ -63,6 +63,10 @@ class MainWindow(QMainWindow):
         self.shortcut_paste = QShortcut(QKeySequence("Ctrl+V"), self)
         self.shortcut_paste.activated.connect(self.folder_stick)
 
+        # 设置热键: DEL
+        self.shortcut_delete = QShortcut(QKeySequence("Del"), self)
+        self.shortcut_delete.activated.connect(self.delete_f)
+
     # self.download_file_signal.connect(self.download_file_signal_slot)
 
     #        self.websock = websocket_client.websock()
@@ -281,23 +285,24 @@ class MainWindow(QMainWindow):
     def new_folder(self, name: str) -> folder.folder or None:
         # if self.check_operatre():
         #     return -1
-        return new_folder(self.root_folder, name, 0)
+        return new_folder(self.root_folder, name, 0, date=get_date())
         #  self.send_folder()  # 发送最新结构
         # self.populateList()
 
     # 创建文件
-    def new_file(self, name: str) -> folder.folder or None:
+    def new_file(self, name: str, size: int = 0, date: str = get_date()) -> folder.folder or None:
         # if self.check_operatre():
         #     return -1
-        return new_folder(self.root_folder, name, 1)
+        return new_folder(self.root_folder, name, 1, size=size, date=date)
         #  self.send_folder()  # 发送最新结构
         # self.populateList()
 
     # 删除操作
     def delete_f(self):
-        print(len(self.selected_items))
         # if self.check_operatre():  # 判断这次操作可行性
         #     return -1
+        self.selected_items = self.ui.fileListWidget.selectedItems()
+
         if len(self.selected_items) > 1:
             reply = QMessageBox.question(self, '确认', '确定要删除吗?', QMessageBox.Yes | QMessageBox.No,
                                          QMessageBox.No)
@@ -311,12 +316,12 @@ class MainWindow(QMainWindow):
                 os.remove(self.get_relative_path(widget.r_folder))
             except Exception as e:
                 print(e)
+
             del_file_name = self.get_file_servername(widget.r_folder)  # 获取文件名
             t = websocket_client.delete_file(del_file_name)
             t.start()
             delete_folder(widget.r_folder)
 
-        print('test')
         self.send_folder()  # 发送最新结构
         # self.populateList()
 
@@ -574,12 +579,21 @@ class MainWindow(QMainWindow):
     def dropEvent(self, event: QDropEvent):
         # 获取拖入的文件路径
         file_urls = event.mimeData().urls()
+        file_path = file_urls[0].toLocalFile()  # 获取第一个文件的本地路径
+
+        # 判断是否为文件夹
+        if os.path.isdir(file_path):
+            QMessageBox.warning(self, "警告", "请不要上传文件夹！")
+            return
         if file_urls:
             # 提示是否上传
             reply = QMessageBox.question(self, '确认', '是否上传文件？', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if reply == QMessageBox.Yes:
+
                 file_path = file_urls[0].toLocalFile()  # 获取第一个文件的本地路径
-                t = self.new_file(os.path.basename(file_path))
+                # 获取文件大小，以KB为单位
+                file_size = os.path.getsize(file_path)
+                t = self.new_file(os.path.basename(file_path), size=int(file_size / 1024))
                 dest_path = self.get_relative_path(t)  # 获取文件在服务器上的路径
                 print(dest_path)
                 # 确保目标目录存在，如果没有则创建
@@ -641,7 +655,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "下载失败", f" {file_name} 下载失败")
 
     def get_file_servername(self, folder_: folder.folder):  # 获取文件在服务器上的名称
-        return websocket_client.get_file_serverName(self.root_folder.get_id().replace('/', '\\') + folder_.name)
+        return websocket_client.get_file_serverName(folder_.get_id()[:-1])
 
     def get_relative_path(self, folder_: folder.folder):  # 获取文件本地相对路径
         return self.root_path + folder_.get_id()[:-1].replace('/', '\\')
