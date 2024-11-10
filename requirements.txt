@@ -1,0 +1,5 @@
+websockets
+websocket-client
+PyQt5
+pynupt
+functools
