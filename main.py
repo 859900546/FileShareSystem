@@ -195,6 +195,10 @@ class MainWindow(QMainWindow):
     # self.ui.pushButton_3.clicked.connect(self.toggle_menu)
 
     # self.menu.aboutToHide.connect(self.ui.pushButton_3.setChecked)
+
+
+
+
     # 界面刷新
     def populateList(self):
         # self.write_folder()  # 更新文件位置
@@ -232,6 +236,7 @@ class MainWindow(QMainWindow):
 
         # self.ui.fileListWidget.itemClicked.connect(self.onClicked)
 
+
     # 列表点击
     def onClicked(self, item):
         # Here you can access the widget and its contents
@@ -260,6 +265,9 @@ class MainWindow(QMainWindow):
         self.root_folder = widget.r_folder  # 更新root
         self.populateList()  # 显示目录
         # QMessageBox.information(self, "Directory Clicked", "You clicked on a directory.")
+
+
+
 
     # 返回按钮
     def button_return(self):
@@ -292,32 +300,40 @@ class MainWindow(QMainWindow):
         #  self.send_folder()  # 发送最新结构
         # self.populateList()
 
-    # 删除操作
-    def delete_f(self):
-        print(len(self.selected_items))
-        # if self.check_operatre():  # 判断这次操作可行性
-        #     return -1
-        if len(self.selected_items) > 1:
-            reply = QMessageBox.question(self, '确认', '确定要删除吗?', QMessageBox.Yes | QMessageBox.No,
-                                         QMessageBox.No)
-            if reply == QMessageBox.Yes:
-                pass
-            else:
-                return
-        for item in self.selected_items:
-            widget = self.ui.fileListWidget.itemWidget(item)
-            try:
-                os.remove(self.get_relative_path(widget.r_folder))
-            except Exception as e:
-                print(e)
-            del_file_name = self.get_file_servername(widget.r_folder)  # 获取文件名
-            t = websocket_client.delete_file(del_file_name)
-            t.start()
-            delete_folder(widget.r_folder)
 
-        print('test')
-        self.send_folder()  # 发送最新结构
-        # self.populateList()
+
+
+    # # 删除操作
+    # def delete_f(self):
+    #     print(len(self.selected_items))
+    #     # if self.check_operatre():  # 判断这次操作可行性
+    #     #     return -1
+    #     if len(self.selected_items) > 1:
+    #         reply = QMessageBox.question(self, '确认', '确定要删除吗?', QMessageBox.Yes | QMessageBox.No,
+    #                                      QMessageBox.No)
+    #         if reply == QMessageBox.Yes:
+    #             pass
+    #         else:
+    #             return
+    #     for item in self.selected_items:
+    #         widget = self.ui.fileListWidget.itemWidget(item)
+    #         try:
+    #             os.remove(self.get_relative_path(widget.r_folder))
+    #         except Exception as e:
+    #             print(e)
+    #         del_file_name = self.get_file_servername(widget.r_folder)  # 获取文件名
+    #         t = websocket_client.delete_file(del_file_name)
+    #         t.start()
+    #         delete_folder(widget.r_folder)
+    #
+    #     print('test')
+    #     self.send_folder()  # 发送最新结构
+    #     # self.populateList()
+
+
+
+
+
 
     # 输入框
     def get_name(self, flag, old_messge=""):
@@ -410,6 +426,10 @@ class MainWindow(QMainWindow):
             else:
                 self.menu_2.popup(self.mapToGlobal(xxyy))
 
+
+
+
+
     # 复制
     def folder_copy(self):
         self.copy_list.clear()
@@ -484,8 +504,14 @@ class MainWindow(QMainWindow):
             widget.r_folder.name = s
             widget.r_folder.date = get_date()
         self.send_folder()
-        # self.populateList()  # 刷新
+        # self.populateList()
 
+
+
+
+
+
+        # 刷新
     def update_sortype(self, sort_type):
         if self.sort_type == sort_type:
             self.isreverse = not self.isreverse
