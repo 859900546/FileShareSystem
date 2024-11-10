@@ -6,14 +6,13 @@ import time
 from copy import deepcopy
 from functools import partial
 from PyQt5.QtCore import Qt, QPoint, pyqtSignal
-from PyQt5.QtGui import QPixmap, QIcon, QImage, QDragEnterEvent, QDropEvent
+from PyQt5.QtGui import QPixmap, QIcon, QImage, QDragEnterEvent, QDropEvent, QKeySequence, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QHBoxLayout, QLabel, QListWidgetItem, QMessageBox, \
-    QMenu, QAction, QLineEdit, QDialogButtonBox, QVBoxLayout, QDialog, QListWidget
-
+    QMenu, QAction, QLineEdit, QDialogButtonBox, QVBoxLayout, QDialog, QListWidget, QShortcut
 from DirectoryItemWidget import DirectoryItemWidget
 from analysis_data import *
 import uio
-import mouse
+# import mouse
 import websocket_client
 import requests
 import progressDialog
@@ -29,9 +28,9 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.root_folder = None
         self.menu = None
-        self.mouse_ = mouse.MyThread()  # 鼠标监听线程
-        self.mouse_.start()  # 开始
-        self.mouse_.value_changed.connect(self.listen_mouse)
+
+        #        self.mouse_.start()  # 开始
+        #        self.mouse_.value_changed.connect(self.listen_mouse)
         self.menu_2 = None
         self.selected_items = None
         self.action1 = None
@@ -49,12 +48,20 @@ class MainWindow(QMainWindow):
         self.t = None
         self.tt = None
         self.progress_dialog = None
-        self.roo_path = 'static\\files'
+        self.root_path = 'static\\files'
 
         self.download_file_signal.connect(self.download_file_signal_slot)
 
         # 启用拖拽功能
         self.setAcceptDrops(True)
+        self.ui.fileListWidget.value_changed.connect(self.listen_mouse)
+        # 热键
+        # self.shortcut_copy = QShortcut(QKeySequence("Ctrl+C"), self)
+        # self.shortcut_copy.activated.connect(self.on_ctrl_q)
+        #
+        # # 设置热键：Ctrl+V
+        # self.shortcut_paste = QShortcut(QKeySequence("Ctrl+V"), self)
+        # self.shortcut_paste.activated.connect(self.on_ctrl_s)
 
     # self.download_file_signal.connect(self.download_file_signal_slot)
 
@@ -183,8 +190,9 @@ class MainWindow(QMainWindow):
         self.menu_2.addAction(self.action7)
         self.menu_2.addAction(self.action8)
 
-        # self.menu_2.removeAction(action7)  # 移出操作
-        # self.ui.pushButton_3.clicked.connect(self.toggle_menu)
+        # self.ui.fileListWidget.value_changed.connect(self.listen_mouse)
+    # self.menu_2.removeAction(action7)  # 移出操作
+    # self.ui.pushButton_3.clicked.connect(self.toggle_menu)
 
     # self.menu.aboutToHide.connect(self.ui.pushButton_3.setChecked)
     # 界面刷新
@@ -232,14 +240,12 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "警告", "空目录")
             return
 
-        path = 'static\\files' + self.root_folder.get_id().replace('/', '\\') + widget.r_folder.name
+        path = self.get_relative_path(widget.r_folder)  # 获取相对路径
 
         if widget.r_folder.check_file == 1:
             print(path)
             if not os.path.exists(path):
-                Reletive_path = self.root_folder.get_id().replace('/', '\\') + widget.r_folder.name
-                name = Reletive_path.replace('\\', '@0@')
-                name = name.replace('/', '@0@')
+                name = self.get_file_servername(widget.r_folder)  # 获取文件名
                 reply = QMessageBox.question(self, '确认', '文件不存在，是否下载？', QMessageBox.Yes | QMessageBox.No,
                                              QMessageBox.No)
                 if reply == QMessageBox.Yes:
@@ -300,7 +306,15 @@ class MainWindow(QMainWindow):
                 return
         for item in self.selected_items:
             widget = self.ui.fileListWidget.itemWidget(item)
+            try:
+                os.remove(self.get_relative_path(widget.r_folder))
+            except Exception as e:
+                print(e)
+            del_file_name = self.get_file_servername(widget.r_folder)  # 获取文件名
+            t = websocket_client.delete_file(del_file_name)
+            t.start()
             delete_folder(widget.r_folder)
+
         print('test')
         self.send_folder()  # 发送最新结构
         # self.populateList()
@@ -362,10 +376,11 @@ class MainWindow(QMainWindow):
         if len(self.ui.fileListWidget.selectedItems()) == 0:  # 检查是否取消了所有选择
             self.ui.fileListWidget.clearSelection()  # 清除选择
 
+    # 监听鼠标事件
     def listen_mouse(self, value, x, y):
         # 0,1 分别代表左键按下和弹起、2,3分别代表右键
         windowsize = self.pos()
-        xxyy = QPoint(x - windowsize.x() + 20, y - windowsize.y() - 20)
+        xxyy = QPoint(x + 20, y + windowsize.y() - 20)
         # windowsize = self.size()
         if value == 0:
             self.ui.fileListWidget.clearSelection()
@@ -428,6 +443,12 @@ class MainWindow(QMainWindow):
             del book
             # i.name = input_value
             if i.check_file:
+                Relative_path = self.get_relative_path(i)  # 获取文件在本地的原路径
+                dest_path = self.get_relative_path(self.root_folder + input_value)  # 目标文件在本地的路径
+                dest_dir = os.path.dirname(Relative_path)  # 获取目标文件路径的目录部分
+                if not os.path.exists(dest_dir):
+                    os.makedirs(dest_dir)  # 创建目标文件夹及其父文件夹
+                shutil.copy(Relative_path, self.get_relative_path(dest_path))  # 复制文件到目标目录
                 self.new_file(input_value)
             else:
                 # self.new_folder(i.name)
@@ -437,6 +458,7 @@ class MainWindow(QMainWindow):
                 self.root_folder.son_folder.append(f)
             if self.is_shear:
                 delete_folder(i)  # 删除原来位置的
+                os.remove(self.get_relative_path(i))  # 删除原文件
         self.action5.setEnabled(False)  # 复制完成
         self.is_shear = False  # 重置剪切状态
         self.copy_list = []
@@ -444,6 +466,7 @@ class MainWindow(QMainWindow):
         self.send_folder()
         # self.populateList()
 
+    # 重命名
     def re_name(self):
         if len(self.selected_items) != 1:
             return
@@ -452,6 +475,12 @@ class MainWindow(QMainWindow):
             s = self.get_name(widget.r_folder.check_file, old_messge=widget.r_folder.name)
             if s is None:
                 return
+            book = set()
+            # 判重名
+            for i in self.root_folder.son_folder:  # 遍历子目录
+                book.add((i.name, i.check_file))
+            while (s, widget.r_folder.check_file) in book:
+                s += "(1)"
             widget.r_folder.name = s
             widget.r_folder.date = get_date()
         self.send_folder()
@@ -536,7 +565,8 @@ class MainWindow(QMainWindow):
             if reply == QMessageBox.Yes:
                 file_path = file_urls[0].toLocalFile()  # 获取第一个文件的本地路径
                 t = self.new_file(os.path.basename(file_path))
-                dest_path = 'static\\files' + t.get_id()[:-1].replace('/', '\\')
+                dest_path = self.get_relative_path(t)  # 获取文件在服务器上的路径
+                print(dest_path)
                 # 确保目标目录存在，如果没有则创建
                 dest_dir = os.path.dirname(dest_path)  # 获取目标文件路径的目录部分
                 if not os.path.exists(dest_dir):
@@ -580,7 +610,7 @@ class MainWindow(QMainWindow):
         path = file_name.replace('@0@', '\\')
         with requests.get(f"http://172.17.251.208:6618/static/files/{file_name}", stream=True) as response:
             if response.status_code == 200:
-                with open(f'static/files/{path}', 'wb') as file:
+                with open(f'static\\files{path}', 'wb') as file:
                     for chunk in response.iter_content(chunk_size=8192):  # 按块读取文件
                         file.write(chunk)
                 self.download_file_signal.emit(True, os.path.basename(path))
@@ -594,6 +624,23 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "下载成功", f" {file_name} 下载成功")
         else:
             QMessageBox.warning(self, "下载失败", f" {file_name} 下载失败")
+
+    def get_file_servername(self, folder_: folder.folder):  # 获取文件在服务器上的名称
+        return websocket_client.get_file_serverName(self.root_folder.get_id().replace('/', '\\') + folder_.name)
+
+    def get_relative_path(self, folder_: folder.folder):  # 获取文件本地相对路径
+        return self.root_path + folder_.get_id()[:-1].replace('/', '\\')
+
+    # def mousePressEvent(self, event: QMouseEvent):
+    #     print(f"Mouse pressed at: {event.pos()}")
+    #     if event.button() == Qt.LeftButton:  # 如果点击的是鼠标左键
+    #         print(f"Mouse clicked at: ({event.x()}, {event.y()})")
+    #
+    # def mouseReleaseEvent(self, event: QMouseEvent):
+    #     print(f"Mouse Released at: {event.pos()}")
+    #
+    # def mouseMoveEvent(self, event: QMouseEvent):
+    #     print(f"Mouse moved to: {event.pos()}")
 
 
 temp = 0

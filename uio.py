@@ -8,6 +8,8 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import Qt, pyqtSignal
+
 
 class Ui_FileManagerWindow(object):
     def setupUi(self, FileManagerWindow):
@@ -89,7 +91,7 @@ class Ui_FileManagerWindow(object):
         self.pushButton_7.setObjectName("pushButton_7")
         self.horizontalLayout.addWidget(self.pushButton_7)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
-        self.fileListWidget = QtWidgets.QListWidget(self.centralwidget)
+        self.fileListWidget = QListWidget_2(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -123,3 +125,27 @@ class Ui_FileManagerWindow(object):
         self.pushButton_2.setText(_translate("FileManagerWindow", "修改日期"))
         self.pushButton_6.setText(_translate("FileManagerWindow", "类型"))
         self.pushButton_7.setText(_translate("FileManagerWindow", "大小"))
+
+
+class QListWidget_2(QtWidgets.QListWidget):
+    value_changed = pyqtSignal(int, int, int)  # 信号
+
+    def __init__(self, parent=None):
+        super(QListWidget_2, self).__init__(parent)
+
+    def mousePressEvent(self, event):
+        print("mousePressEvent")
+        x = event.pos().x()
+        y = event.pos().y()
+        if event.button() == Qt.LeftButton:
+            self.value_changed.emit(0, x, y)
+        elif event.button() == Qt.RightButton:
+            self.value_changed.emit(2, x, y)
+
+    def mouseReleaseEvent(self, event):
+        x = event.pos().x()
+        y = event.pos().y()
+        if event.button() == Qt.LeftButton:
+            self.value_changed.emit(1, x, y)
+        elif event.button() == Qt.RightButton:
+            self.value_changed.emit(3, x, y)

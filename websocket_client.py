@@ -71,6 +71,7 @@ class Get_folder(QThread):
 class Post_folder(QThread):
     message = None
     log = pyqtSignal(bool)
+
     def run(self):
         # ws.connect("ws://112.74.184.16:8608")
         if self.message is None:
@@ -106,7 +107,7 @@ class Post_file(QThread):
     send_progress = pyqtSignal(float)
     log = pyqtSignal(bool)
 
-    def __init__(self, AbsolutePath,RelativePath):
+    def __init__(self, AbsolutePath, RelativePath):
         super().__init__()
         self.file = AbsolutePath
         self.RelativePath = RelativePath
@@ -151,6 +152,33 @@ class Post_file(QThread):
             print("\nFile transfer complete.")
 
 
+class create_file(QThread):
+
+    def __init__(self, name):
+        super().__init__()
+        self.name = name
+
+    def run(self):
+        ws.send(f'CREfile:,{self.name}')
+        s = ws.recv()
+        print(s)
+
+
+class delete_file(QThread):
+    def __init__(self, name):
+        super().__init__()
+        self.name = name
+
+    def run(self):
+        ws.send(f'DELfile:,{self.name}')
+        s = ws.recv()
+        print(s)
+
+
+def get_file_serverName(Relative_path: str):
+    name = Relative_path.replace('\\', '@0@')
+    name = name.replace('/', '@0@')
+    return name
 # test = Post_file(r"D:\Desktop\test.pdf")
 # test.start()
 # test.wait()

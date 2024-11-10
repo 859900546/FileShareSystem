@@ -1,10 +1,9 @@
 import asyncio
-import threading
-import time
 import websockets
 from datetime import datetime
 import server_fun
 from server_fun import handle_postfile, handle_postfolder, handle_getfolder
+
 
 connected_clients = set()
 
@@ -39,6 +38,12 @@ async def handle_client(websocket, path):
 
             elif 'GETfile' in message[0]:  # 发送文件
                 pass
+            elif 'DELfile' in message[0]:  # 删除文件
+                await server_fun.handle_deletefile(websocket, message[1])
+
+            elif 'CREfile' in message[0]:  # 创建文件
+                await server_fun.handle_createfile(websocket, message[1])
+
             elif 'hello_server' in message[0]:
                 with open('message.txt', "r") as f:
                     await asyncio.wait_for(websocket.send(f.readlines(), timeout=10))

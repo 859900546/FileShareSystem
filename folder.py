@@ -4,7 +4,7 @@ class folder:
         self.son_folder: [] = son_folder  # 子集合
         self.father_folder = father_folder  # 父指针
         self.id = i
-        self.check_file = check_file
+        self.check_file = check_file  # 1表示文件，0表示文件夹
         self.date = date
         self.size = size
 
