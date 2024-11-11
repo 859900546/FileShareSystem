@@ -7,19 +7,18 @@ from copy import deepcopy
 from functools import partial
 from queue import Queue
 
-from PyQt5.QtCore import Qt, QPoint, pyqtSignal
-from PyQt5.QtGui import QPixmap, QIcon, QImage, QDragEnterEvent, QDropEvent, QKeySequence, QMouseEvent
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QHBoxLayout, QLabel, QListWidgetItem, QMessageBox, \
+from PyQt5.QtCore import QPoint, pyqtSignal
+from PyQt5.QtGui import QPixmap, QIcon, QImage, QDragEnterEvent, QDropEvent, QKeySequence
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QListWidgetItem, QMessageBox, \
     QMenu, QAction, QLineEdit, QDialogButtonBox, QVBoxLayout, QDialog, QListWidget, QShortcut
 
-import analysis_data
-from DirectoryItemWidget import DirectoryItemWidget
-from analysis_data import *
-import uio
+from pointStruct import analysis_data
+from ui.DirectoryItemWidget import DirectoryItemWidget
+from pointStruct.analysis_data import *
+from ui import uio, progressDialog
 # import mouse
-import websocket_client
+from Websocket_filesystem import websocket_client
 import requests
-import progressDialog
 
 
 class MainWindow(QMainWindow):
@@ -109,7 +108,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_4.clicked.connect(self.recv_folder)  # 刷新
         self.ui.pushButton_4.setText('')
         self.ui.pushButton_4.setStyleSheet('background-color: rgba(255, 255, 255, 100)')
-        image = QImage('rec/flush_icon.png')  # 替换成你想要的图片路径
+        image = QImage('rec/icon/flush_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         scaled_pixmap = pixmap.scaled(25, 25)
         icon = QIcon(scaled_pixmap)
@@ -119,7 +118,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_5.clicked.connect(self.button_return)
         self.ui.pushButton_5.setText('')
         self.ui.pushButton_5.setStyleSheet('background-color: rgba(255, 255, 255, 100);')
-        image = QImage('rec/return_icon.png')  # 替换成你想要的图片路径
+        image = QImage('rec/icon/return_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         scaled_pixmap = pixmap.scaled(25, 25)
         icon = QIcon(scaled_pixmap)
@@ -128,14 +127,14 @@ class MainWindow(QMainWindow):
 
         self.ui.pushButton_3.setText('')
         self.ui.pushButton_3.setStyleSheet('background-color: rgba(255, 255, 255, 100);')
-        image = QImage('rec/menu_icon.png')  # 替换成你想要的图片路径
+        image = QImage('rec/icon/menu_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         scaled_pixmap = pixmap.scaled(25, 25)
         icon = QIcon(scaled_pixmap)
         self.ui.pushButton_3.setIcon(icon)
         self.ui.pushButton_3.setIconSize(pixmap.size())
 
-        image = QImage('rec/folder_icon.png')  # 替换成你想要的图片路径
+        image = QImage('rec/icon/folder_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         scaled_pixmap = pixmap.scaled(25, 25)
         icon = QIcon(scaled_pixmap)
@@ -143,11 +142,11 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(icon)
         # 菜单栏
         self.menu = QMenu(self)
-        image = QImage('rec/new_file.png')  # 替换成你想要的图片路径
+        image = QImage('rec/icon/new_file.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
         action1 = QAction(icon, "新建文件", self)
-        image = QImage('rec/folder_icon.png')  # 替换成你想要的图片路径
+        image = QImage('rec/icon/folder_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
         action2 = QAction(icon, "新建文件夹", self)
@@ -161,15 +160,15 @@ class MainWindow(QMainWindow):
 
         # 右键菜单栏
         self.menu_2 = QMenu(self)
-        image = QImage('rec/new_file.png')  # 替换成你想要的图片路径
+        image = QImage('rec/icon/new_file.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
         self.action1 = QAction(icon, "新建文件", self)
-        image = QImage('rec/folder_icon.png')  # 替换成你想要的图片路径
+        image = QImage('rec/icon/folder_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
         self.action2 = QAction(icon, "新建文件夹", self)
-        image = QImage('rec/delete_icon.png')  # 替换成你想要的图片路径
+        image = QImage('rec/icon/delete_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
         self.action3 = QAction(icon, "删除", self)
@@ -179,7 +178,7 @@ class MainWindow(QMainWindow):
         self.action5.setEnabled(False)  # 不可点击
         self.action7 = QAction("重命名", self)
 
-        image = QImage('rec/flush_icon.png')  # 替换成你想要的图片路径
+        image = QImage('rec/icon/flush_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
         self.action8 = QAction(icon, "刷新", self)
@@ -237,7 +236,7 @@ class MainWindow(QMainWindow):
             item = QListWidgetItem(self.ui.fileListWidget)
             # item.setSizeHint(item_widget.sizeHint())
             item.setText('当前目录为空')
-            image = QImage('rec/file_icon_2.png')  # 替换成你想要的图片路径
+            image = QImage('rec/icon/file_icon_2.png')  # 替换成你想要的图片路径
             pixmap = QPixmap.fromImage(image)
             scaled_pixmap = pixmap.scaled(50, 50)
             icon = QIcon(scaled_pixmap)
@@ -610,7 +609,7 @@ class MainWindow(QMainWindow):
                 if i == j.name:
                     self.root_folder = j
                     break
-        from analysis_data import root
+        from pointStruct.analysis_data import root
         if old_folder != self.root_folder.get_id():
             self.root_folder = root
         self.populateList()
@@ -779,13 +778,14 @@ if __name__ == "__main__":
     with open('config.ini', 'r') as f:
         ip = f.readline().strip()
     websocket_client.ip = ip
+    websocket_client.start_ws()
     print(websocket_client.ip)
     app = QApplication(sys.argv)
     window = MainWindow()
     window.init()
     window.show()
     x = websocket_client.loop_connect()
-    websocket_client.start_ws()
+
     x.s = 2
     x.log.connect(heartbert_check)
     x.start()

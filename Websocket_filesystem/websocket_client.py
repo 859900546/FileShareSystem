@@ -1,10 +1,9 @@
 import os
-import sys
 import time
 from PyQt5.QtCore import QThread
 from PyQt5.QtCore import pyqtSignal
 import websocket
-from analysis_data import *
+from pointStruct.analysis_data import *
 
 ip = '172.17.251.208'
 timeout: int = 5

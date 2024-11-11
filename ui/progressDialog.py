@@ -20,7 +20,6 @@ class ProgressDialog(QDialog):
         self.status_label = QLabel("正在上传...", self)
         layout.addWidget(self.status_label)
 
-        self.setLayout(layout)
 
     def update_progress(self, value):
         self.progress_bar.setValue(int(value * 100))

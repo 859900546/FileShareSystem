@@ -1,4 +1,3 @@
-import random
 import uuid
 from datetime import datetime
 import platform

@@ -13,9 +13,9 @@ class DirectoryItemWidget(QWidget):
 
         icon_label.setStyleSheet('background-color: transparent;')
         if self.r_folder.check_file:
-            image = QImage('rec/file_icon.png')
+            image = QImage('../rec/icon/file_icon.png')
         else:
-            image = QImage('rec/folder_icon.png')  # 替换成你想要的图片路径
+            image = QImage('../rec/icon/folder_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         scaled_pixmap = pixmap.scaled(30, 30)
         icon_label.setPixmap(scaled_pixmap)
