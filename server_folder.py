@@ -43,6 +43,12 @@ async def handle_client(websocket, path):
             elif 'CREfile' in message[0]:  # 创建文件
                 await server_fun.handle_createfile(websocket, message[1])
 
+            elif 'COPYfile' in message[0]:  # 复制文件
+                await server_fun.handle_copyfile(websocket, message[1], message[2])
+
+            elif 'RENfile' in message[0]:  # 重命名文件
+                await server_fun.handle_renamefile(websocket, message[1], message[2])
+
             elif 'hello_server' in message[0]:
                 with open('message.txt', "r") as f:
                     await asyncio.wait_for(websocket.send(f.readlines(), timeout=10))

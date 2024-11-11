@@ -190,6 +190,44 @@ class delete_file(QThread):
             self.log.emit(False)
 
 
+class copy_file(QThread):
+    log = pyqtSignal(bool)
+
+    def __init__(self, path: str, dest_path: str):
+        super().__init__()
+        self.name = get_file_serverName(path)
+        self.new_name = get_file_serverName(dest_path)
+
+    def run(self):
+        ws.send(f'COPYfile:,{self.name},{self.new_name}')
+        try:
+            s = ws.recv()
+            print(s)
+            self.log.emit(True)
+        except Exception as e:
+            print(e)
+            self.log.emit(False)
+
+
+class rename_file(QThread):
+    log = pyqtSignal(bool)
+
+    def __init__(self, path: str, new_name: str):
+        super().__init__()
+        self.name = get_file_serverName(path)
+        self.new_name = new_name
+
+    def run(self):
+        ws.send(f'RENfile:,{self.name},{self.new_name}')
+        try:
+            s = ws.recv()
+            print(s)
+            self.log.emit(True)
+        except Exception as e:
+            print(e)
+            self.log.emit(False)
+
+
 def get_file_serverName(Relative_path: str):
     name = Relative_path.replace('\\', '@0@')
     name = name.replace('/', '@0@')

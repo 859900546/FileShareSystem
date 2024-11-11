@@ -11,6 +11,8 @@ from PyQt5.QtCore import Qt, QPoint, pyqtSignal
 from PyQt5.QtGui import QPixmap, QIcon, QImage, QDragEnterEvent, QDropEvent, QKeySequence, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QHBoxLayout, QLabel, QListWidgetItem, QMessageBox, \
     QMenu, QAction, QLineEdit, QDialogButtonBox, QVBoxLayout, QDialog, QListWidget, QShortcut
+
+import analysis_data
 from DirectoryItemWidget import DirectoryItemWidget
 from analysis_data import *
 import uio
@@ -44,8 +46,11 @@ class MainWindow(QMainWindow):
         self.action7 = None
         self.action8 = None
         self.copy_list = []
+
         self.post_file_urls: Queue = Queue()
         self.delete_file_urls: Queue = Queue()
+        self.sticker_file_urls: Queue = Queue()
+
         self.is_shear = False
         self.sort_type = 1  # 排序规则
         self.isreverse = False  # 是否从大到小
@@ -301,7 +306,7 @@ class MainWindow(QMainWindow):
         #  self.send_folder()  # 发送最新结构
         # self.populateList()
 
-    # 删除操作
+    # 删除操作触发控制事件
     def delete_f(self):
         # if self.check_operatre():  # 判断这次操作可行性
         #     return -1
@@ -315,10 +320,24 @@ class MainWindow(QMainWindow):
             else:
                 return
         for item in self.selected_items:
-            self.delete_file_urls.put(self.ui.fileListWidget.itemWidget(item).r_folder)
+            if self.ui.fileListWidget.itemWidget(item).r_folder.check_file == 0:  # 文件夹
+                self.get_delete_file_urls(self.ui.fileListWidget.itemWidget(item).r_folder)
 
         self.delete_file_slot(True)
         # self.populateList()
+
+    def get_file_urls(self, root_: folder.folder, Qurls: Queue) -> None:
+        if root_.check_file == 1:
+            Qurls.put(root_)
+        else:
+            if root_.father_folder is None or len(root_.son_folder) == 0:
+                return
+            for i in root_.son_folder:
+                if i.check_file == 1:
+                    Qurls.put(i)
+                else:
+                    self.get_file_urls(i, Qurls)
+        return None
 
     def delete_file_slot(self, log: bool):
         print(log)
@@ -326,6 +345,15 @@ class MainWindow(QMainWindow):
             self.send_folder()  # 发送最新结构
             return
         pointer = self.delete_file_urls.get()
+
+        if pointer.check_file == 1:
+            self.delete_file(pointer)
+        else:
+            self.delete_folder(pointer)
+
+        time.sleep(0.1)
+
+    def delete_file(self, pointer: folder.folder):
         try:
             os.remove(self.get_relative_path(pointer))
         except Exception as e:
@@ -334,8 +362,7 @@ class MainWindow(QMainWindow):
         self.tt = websocket_client.delete_file(del_file_name)
         self.tt.log.connect(self.delete_file_slot)
         self.tt.start()
-        delete_folder(pointer)
-        time.sleep(0.1)
+        analysis_data.delete_folder(pointer)
 
     # 输入框
     def get_name(self, flag, old_messge=""):
@@ -470,33 +497,58 @@ class MainWindow(QMainWindow):
             del book
             # i.name = input_value
             if i.check_file:
-
-                Relative_path = self.get_relative_path(i)  # 获取文件在本地的原路径
-                dest_path = self.get_relative_path(self.root_folder) + '\\' + input_value  # 目标文件在本地的路径
-                # 确保目标目录存在，如果没有则创建
-                dest_dir = os.path.dirname(Relative_path)  # 获取目标文件路径的目录部分
-                if not os.path.exists(dest_dir):
-                    os.makedirs(dest_dir)  # 创建目标文件夹及其父文件夹
-                try:
-                    shutil.copy(Relative_path, dest_path)  # 复制文件到目标目录
-                except Exception as e:
-                    print(e)
-                self.new_file(input_value)
+                self.sticker_file_urls.put((i, input_value))
             else:
                 # self.new_folder(i.name)
                 f = deepcopy(i)
                 f.name = input_value
                 f.father_folder = self.root_folder
                 self.root_folder.son_folder.append(f)
+
+                #  获取粘贴队列
+                self.get_file_urls(f, self.sticker_file_urls)
+
             if self.is_shear:
                 delete_folder(i)  # 删除原来位置的
                 os.remove(self.get_relative_path(i))  # 删除原文件
+
+        self.sticker_file_slot(True)
         self.action5.setEnabled(False)  # 复制完成
         self.is_shear = False  # 重置剪切状态
         self.copy_list = []
-
-        self.send_folder()
         # self.populateList()
+
+    def sticker_file_slot(self, log):
+        print(log)
+        if self.sticker_file_urls.empty():
+            self.send_folder()
+            return
+
+        file_url = self.sticker_file_urls.get()
+        if type(file_url) == tuple:
+            orc_point = file_url[0]
+            dest_name = file_url[1]
+        else:
+            orc_point = file_url
+            dest_name = file_url.name
+
+        Relative_path = self.get_relative_path(orc_point)  # 获取文件在本地的原路径
+        dest_path = self.get_relative_path(self.root_folder) + '\\' + dest_name  # 目标文件在本地的路径
+        # 确保目标目录存在，如果没有则创建
+        dest_dir = os.path.dirname(Relative_path)  # 获取目标文件路径的目录部分
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)  # 创建目标文件夹及其父文件夹
+        try:
+            shutil.copy(Relative_path, dest_path)  # 复制文件到目标目录
+        except Exception as e:
+            print(e)
+        self.new_file(dest_name, size=orc_point.size, date=orc_point.date)
+
+        self.t = websocket_client.copy_file(self.get_file_servername(orc_point),
+                                            self.get_file_servername(self.root_folder))
+        self.t.log.connect(self.sticker_file_slot)
+        self.t.start()
+        time.sleep(0.05)
 
     # 重命名
     def re_name(self):
@@ -642,6 +694,7 @@ class MainWindow(QMainWindow):
 
     # 发送文件夹结构
     def send_folder(self):
+
         data = str_write_folder_structure()
         time.sleep(0.001)  # 玄学
         self.tt = websocket_client.Post_folder()
