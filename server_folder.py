@@ -4,7 +4,6 @@ from datetime import datetime
 import server_fun
 from server_fun import handle_postfile, handle_postfolder, handle_getfolder
 
-
 connected_clients = set()
 
 name = ''
@@ -67,6 +66,7 @@ async def handle_client(websocket, path):
         server_fun.mutex = 1
 
 
+# 文件服务器处理客户端消息
 async def handle_file_client(websocket, path):
     # 添加连接到集合
     # connected_clients.add(websocket)

@@ -72,12 +72,12 @@ async def handle_deletefile(websocket, file_name: str):
     file_path = root_path + '\\' + file_name
     try:
         os.remove(file_path)
+        try:
+            await asyncio.wait_for(websocket.send(f'DEL,{file_name}:ok'), timeout=10)
+        except asyncio.TimeoutError:
+            print("Timeout while sending message to client.")
     except Exception as e:
         print(f"Error occurred while deleting file: {e}")
-    try:
-        await asyncio.wait_for(websocket.send(f'DEL,{file_name}:ok'), timeout=10)
-    except asyncio.TimeoutError:
-        print("Timeout while sending message to client.")
 
 
 async def handle_createfile(websocket, file_name: str):

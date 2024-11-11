@@ -6,11 +6,11 @@ from PyQt5.QtCore import pyqtSignal
 import websocket
 from analysis_data import *
 
-ip = '127.0.0.1'
+ip = '172.17.251.208'
 
 try:
     ws = websocket.WebSocket()
-    ws.connect("ws://127.0.0.1:8608")
+    ws.connect(f"ws://{ip}:8608")
 except:
     pass
 
@@ -36,11 +36,11 @@ class loop_connect(QThread):
             except websocket.WebSocketConnectionClosedException:
                 print("WebSocket 连接已关闭")
                 self.log.emit(False)
-                ws.connect("ws://127.0.0.1:8608")
+                ws.connect(f"ws://{ip}:8608")
             except Exception as e:
                 print("WebSocket 连接异常：", e)
                 self.log.emit(False)
-                ws.connect("ws://127.0.0.1:8608")
+                ws.connect(f"ws://{ip}:8608")
             time.sleep(self.s)
 
 
@@ -124,7 +124,7 @@ class Post_file(QThread):
         if s == "Post:startfile":
             webss = websocket.WebSocket()  # 发送数据端口
             try:
-                webss.connect("ws://127.0.0.1:8609")  # 发送数据端口
+                webss.connect(f"ws://{ip}:8609")  # 发送数据端口
             except:
                 return
             self.send_file(self.file, webss)  # 发送数据

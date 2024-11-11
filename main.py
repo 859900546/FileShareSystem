@@ -56,12 +56,12 @@ class MainWindow(QMainWindow):
         self.setAcceptDrops(True)
         self.ui.fileListWidget.value_changed.connect(self.listen_mouse)
         # 热键
-        # self.shortcut_copy = QShortcut(QKeySequence("Ctrl+C"), self)
-        # self.shortcut_copy.activated.connect(self.on_ctrl_q)
-        #
-        # # 设置热键：Ctrl+V
-        # self.shortcut_paste = QShortcut(QKeySequence("Ctrl+V"), self)
-        # self.shortcut_paste.activated.connect(self.on_ctrl_s)
+        self.shortcut_copy = QShortcut(QKeySequence("Ctrl+C"), self)
+        self.shortcut_copy.activated.connect(self.folder_copy)
+
+        # 设置热键：Ctrl+V
+        self.shortcut_paste = QShortcut(QKeySequence("Ctrl+V"), self)
+        self.shortcut_paste.activated.connect(self.folder_stick)
 
     # self.download_file_signal.connect(self.download_file_signal_slot)
 
@@ -191,13 +191,11 @@ class MainWindow(QMainWindow):
         self.menu_2.addAction(self.action8)
 
         # self.ui.fileListWidget.value_changed.connect(self.listen_mouse)
+
     # self.menu_2.removeAction(action7)  # 移出操作
     # self.ui.pushButton_3.clicked.connect(self.toggle_menu)
 
     # self.menu.aboutToHide.connect(self.ui.pushButton_3.setChecked)
-
-
-
 
     # 界面刷新
     def populateList(self):
@@ -236,7 +234,6 @@ class MainWindow(QMainWindow):
 
         # self.ui.fileListWidget.itemClicked.connect(self.onClicked)
 
-
     # 列表点击
     def onClicked(self, item):
         # Here you can access the widget and its contents
@@ -265,9 +262,6 @@ class MainWindow(QMainWindow):
         self.root_folder = widget.r_folder  # 更新root
         self.populateList()  # 显示目录
         # QMessageBox.information(self, "Directory Clicked", "You clicked on a directory.")
-
-
-
 
     # 返回按钮
     def button_return(self):
@@ -300,40 +294,32 @@ class MainWindow(QMainWindow):
         #  self.send_folder()  # 发送最新结构
         # self.populateList()
 
+    # 删除操作
+    def delete_f(self):
+        print(len(self.selected_items))
+        # if self.check_operatre():  # 判断这次操作可行性
+        #     return -1
+        if len(self.selected_items) > 1:
+            reply = QMessageBox.question(self, '确认', '确定要删除吗?', QMessageBox.Yes | QMessageBox.No,
+                                         QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                pass
+            else:
+                return
+        for item in self.selected_items:
+            widget = self.ui.fileListWidget.itemWidget(item)
+            try:
+                os.remove(self.get_relative_path(widget.r_folder))
+            except Exception as e:
+                print(e)
+            del_file_name = self.get_file_servername(widget.r_folder)  # 获取文件名
+            t = websocket_client.delete_file(del_file_name)
+            t.start()
+            delete_folder(widget.r_folder)
 
-
-
-    # # 删除操作
-    # def delete_f(self):
-    #     print(len(self.selected_items))
-    #     # if self.check_operatre():  # 判断这次操作可行性
-    #     #     return -1
-    #     if len(self.selected_items) > 1:
-    #         reply = QMessageBox.question(self, '确认', '确定要删除吗?', QMessageBox.Yes | QMessageBox.No,
-    #                                      QMessageBox.No)
-    #         if reply == QMessageBox.Yes:
-    #             pass
-    #         else:
-    #             return
-    #     for item in self.selected_items:
-    #         widget = self.ui.fileListWidget.itemWidget(item)
-    #         try:
-    #             os.remove(self.get_relative_path(widget.r_folder))
-    #         except Exception as e:
-    #             print(e)
-    #         del_file_name = self.get_file_servername(widget.r_folder)  # 获取文件名
-    #         t = websocket_client.delete_file(del_file_name)
-    #         t.start()
-    #         delete_folder(widget.r_folder)
-    #
-    #     print('test')
-    #     self.send_folder()  # 发送最新结构
-    #     # self.populateList()
-
-
-
-
-
+        print('test')
+        self.send_folder()  # 发送最新结构
+        # self.populateList()
 
     # 输入框
     def get_name(self, flag, old_messge=""):
@@ -426,12 +412,9 @@ class MainWindow(QMainWindow):
             else:
                 self.menu_2.popup(self.mapToGlobal(xxyy))
 
-
-
-
-
     # 复制
     def folder_copy(self):
+        self.selected_items = self.ui.fileListWidget.selectedItems()
         self.copy_list.clear()
         for item in self.selected_items:
             widget = self.ui.fileListWidget.itemWidget(item)
@@ -449,26 +432,39 @@ class MainWindow(QMainWindow):
 
     # 粘贴
     def folder_stick(self):
-        if self.copy_list is None:
+        print('粘贴')
+        if self.copy_list is None or not len(self.copy_list):
             return
         for i in self.copy_list:
             # 判重名
             input_value = deepcopy(i.name)
+            after_cnt = 0
+            # 分离文件名和后缀
+            if i.check_file:
+                for j in range(0, len(input_value)):
+                    if input_value[j] == '.':
+                        after_cnt = j
+            print(after_cnt)
             flag = i.check_file
             book = set()
             for ii in self.root_folder.son_folder:  # 遍历子目录
                 book.add((ii.name, ii.check_file))
             while (input_value, flag) in book:
-                input_value += "(1)"
+                input_value = input_value[:after_cnt] + "(1)" + input_value[after_cnt:]
             del book
             # i.name = input_value
             if i.check_file:
+
                 Relative_path = self.get_relative_path(i)  # 获取文件在本地的原路径
-                dest_path = self.get_relative_path(self.root_folder + input_value)  # 目标文件在本地的路径
+                dest_path = self.get_relative_path(self.root_folder) + '\\' + input_value  # 目标文件在本地的路径
+                # 确保目标目录存在，如果没有则创建
                 dest_dir = os.path.dirname(Relative_path)  # 获取目标文件路径的目录部分
                 if not os.path.exists(dest_dir):
                     os.makedirs(dest_dir)  # 创建目标文件夹及其父文件夹
-                shutil.copy(Relative_path, self.get_relative_path(dest_path))  # 复制文件到目标目录
+                try:
+                    shutil.copy(Relative_path, dest_path)  # 复制文件到目标目录
+                except Exception as e:
+                    print(e)
                 self.new_file(input_value)
             else:
                 # self.new_folder(i.name)
@@ -506,12 +502,8 @@ class MainWindow(QMainWindow):
         self.send_folder()
         # self.populateList()
 
-
-
-
-
-
         # 刷新
+
     def update_sortype(self, sort_type):
         if self.sort_type == sort_type:
             self.isreverse = not self.isreverse
@@ -587,7 +579,8 @@ class MainWindow(QMainWindow):
         file_urls = event.mimeData().urls()
         if file_urls:
             # 提示是否上传
-            reply = QMessageBox.question(self, '确认', '是否上传文件？', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            reply = QMessageBox.question(self, '确认', '是否上传文件？', QMessageBox.Yes | QMessageBox.No,
+                                         QMessageBox.No)
             if reply == QMessageBox.Yes:
                 file_path = file_urls[0].toLocalFile()  # 获取第一个文件的本地路径
                 t = self.new_file(os.path.basename(file_path))

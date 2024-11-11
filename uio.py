@@ -134,13 +134,13 @@ class QListWidget_2(QtWidgets.QListWidget):
         super(QListWidget_2, self).__init__(parent)
 
     def mousePressEvent(self, event):
-        print("mousePressEvent")
         x = event.pos().x()
         y = event.pos().y()
         if event.button() == Qt.LeftButton:
             self.value_changed.emit(0, x, y)
         elif event.button() == Qt.RightButton:
             self.value_changed.emit(2, x, y)
+        super(QListWidget_2, self).mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
         x = event.pos().x()
@@ -149,3 +149,4 @@ class QListWidget_2(QtWidgets.QListWidget):
             self.value_changed.emit(1, x, y)
         elif event.button() == Qt.RightButton:
             self.value_changed.emit(3, x, y)
+        super(QListWidget_2, self).mouseReleaseEvent(event)
