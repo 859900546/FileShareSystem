@@ -322,7 +322,9 @@ class MainWindow(QMainWindow):
                 return
         for item in self.selected_items:
             if self.ui.fileListWidget.itemWidget(item).r_folder.check_file == 0:  # 文件夹
-                self.get_delete_file_urls(self.ui.fileListWidget.itemWidget(item).r_folder)
+                self.get_file_urls(self.ui.fileListWidget.itemWidget(item).r_folder, self.delete_file_urls)
+            else:
+                self.delete_file_urls.put(self.ui.fileListWidget.itemWidget(item).r_folder)
 
         self.delete_file_slot(True)
         # self.populateList()
@@ -642,11 +644,15 @@ class MainWindow(QMainWindow):
     def Post_file_slot(self, log:bool) -> None:
         print(log)
         if self.post_file_urls.empty():
+            self.send_folder()
             return
         file_url = self.post_file_urls.get()
         file_path = file_url.toLocalFile()  # 获取第一个文件的本地路径
+        if os.path.isdir(file_path):
+            QMessageBox.warning(self, "警告", "请不要上传文件夹！")
+            return
         # 获取文件大小，以KB为单位
-        file_size = max(1, os.path.getsize(file_path))
+        file_size = max(1024, os.path.getsize(file_path))
         t = self.new_file(os.path.basename(file_path), size=int(file_size / 1024))
         dest_path = self.get_relative_path(t)  # 获取文件在服务器上的路径
         print(dest_path)
@@ -656,10 +662,9 @@ class MainWindow(QMainWindow):
             os.makedirs(dest_dir)  # 创建目标文件夹及其父文件夹
         shutil.copy(file_path, dest_path)
 
-        self.send_folder()
         print(t.get_id()[:-1])
         self.Post_file(file_path, t.get_id()[:-1])  # 绝对路径，相对路径
-        time.sleep(0.1)
+        time.sleep(0.05)
 
     # 拖拽进入事件
     def dragEnterEvent(self, event: QDragEnterEvent) ->None:
@@ -771,11 +776,16 @@ def heartbert_check(log):
 
 
 if __name__ == "__main__":
+    with open('config.ini', 'r') as f:
+        ip = f.readline().strip()
+    websocket_client.ip = ip
+    print(websocket_client.ip)
     app = QApplication(sys.argv)
     window = MainWindow()
     window.init()
     window.show()
     x = websocket_client.loop_connect()
+    websocket_client.start_ws()
     x.s = 2
     x.log.connect(heartbert_check)
     x.start()

@@ -83,6 +83,11 @@ def str_read_folder_structure(liness, indent_size=2):
                     subfolder.father_folder = f_folder  # 父目录
                     subfolder.date = temp[2]
                     subfolder.size = temp[3]
+                    try:
+                        subfolder.builder = temp[4]
+                    except Exception as e:
+                        print(e)
+                        subfolder.builder = "system"
                     subfolder.son_folder = parse_subfolders(lines, indent + 1, subfolder)  # 继续递归
                     f_subfolder.append(subfolder)  # 将当前子文件夹加入到父文件夹中
                 elif subfolder_indent < indent:  # 进入叔叔层
@@ -110,7 +115,7 @@ def write_folder_structure(file_path):
         else:
             s = " " * indent + "- " + folder_.name + "," + (
                 "1" if folder_.check_file else "0") + "," + folder_.date + "," + \
-                str(folder_.size)
+                str(folder_.size) + "," + folder_.builder
             # print(" " * indent + "- " + folder_.name + " " + (
             #     "文件" if folder_.check_file else "文件夹") + "," + "路径：" + folder_.id)
         f.write(s + '\n')
@@ -135,7 +140,7 @@ def str_write_folder_structure(file_path='test2.txt'):
         else:
             s = " " * indent + "- " + folder_.name + "," + (
                 "1" if folder_.check_file else "0") + "," + folder_.date + "," + \
-                str(folder_.size)
+                str(folder_.size) + "," + folder_.builder
             # print(" " * indent + "- " + folder_.name + " " + (
             #     "文件" if folder_.check_file else "文件夹") + "," + "路径：" + folder_.id)
         # f.write(s + '\n')

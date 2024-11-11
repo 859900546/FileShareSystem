@@ -7,12 +7,15 @@ import websocket
 from analysis_data import *
 
 ip = '172.17.251.208'
+timeout: int = 5
+ws = websocket.WebSocket()
 
-try:
-    ws = websocket.WebSocket()
-    ws.connect(f"ws://{ip}:8608")
-except:
-    pass
+
+def start_ws():
+    try:
+        ws.connect(f"ws://{ip}:8608", timeout=timeout)
+    except:
+        pass
 
 
 class send(QThread):
@@ -36,11 +39,17 @@ class loop_connect(QThread):
             except websocket.WebSocketConnectionClosedException:
                 print("WebSocket 连接已关闭")
                 self.log.emit(False)
-                ws.connect(f"ws://{ip}:8608")
+                try:
+                    ws.connect(f"ws://{ip}:8608", timeout=timeout)
+                except:
+                    pass
             except Exception as e:
                 print("WebSocket 连接异常：", e)
                 self.log.emit(False)
-                ws.connect(f"ws://{ip}:8608")
+                try:
+                    ws.connect(f"ws://{ip}:8608", timeout=timeout)
+                except:
+                    pass
             time.sleep(self.s)
 
 
@@ -97,7 +106,7 @@ class Get_file(QThread):
         return
     def run(self):
         if not ws.connected:
-            ws.connect(f"ws://{ip}:8608")
+            ws.connect(f"ws://{ip}:8608", timeout=timeout)
         ws.send('GETfile:' + self.file_name)
         s = ws.recv()
         self.new_data.emit(s)
