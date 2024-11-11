@@ -92,7 +92,6 @@ async def control_server():
     print(f'文件服务器启动时间：{datetime.now()}')
     # 启动文件服务器
     server = await websockets.serve(handle_client, "0.0.0.0", 8608)
-    print("Server 1 started at ws://localhost:8608")
     await server.wait_closed()
 
 
@@ -100,7 +99,6 @@ async def file_server():
     print(f'文件服务器启动时间：{datetime.now()}')
     # 启动文件服务器
     server_1 = await websockets.serve(handle_file_client, "0.0.0.0", 8609)
-    print("Server 1 started at ws://localhost:8609")
     await server_1.wait_closed()
 
 

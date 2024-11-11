@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 import platform
-import folder
+from . import folder
 
 root = folder.folder()
 

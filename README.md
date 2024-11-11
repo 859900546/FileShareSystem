@@ -1,5 +1,7 @@
 # FileShareSystem
 
+## 介绍
+![img.png](img.png)
 本项目为多用户文件管理系统，采用Python、Qt5、Websockets、mysql等技术实现。
 包含服务端和客户端两部分，服务端负责文件管理，客户端负责用户交互。
 
