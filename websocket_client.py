@@ -16,9 +16,9 @@ except:
 
 
 class send(QThread):
-    def __init__(self, m):
+    def __init__(self, m:str) -> None:
         self.message = m
-
+        return
     def run(self):
         ws.send(self.message)
 
@@ -47,9 +47,9 @@ class loop_connect(QThread):
 class recv(QThread):
     data_sent = pyqtSignal(str)
 
-    def __init__(self, m):
+    def __init__(self, m:str) -> None:
         self.message = m
-
+        return
     def run(self):
         s = ws.recv()
         self.data_sent(s)  # 发送信号
@@ -92,9 +92,9 @@ class Post_folder(QThread):
 class Get_file(QThread):
     new_data = pyqtSignal(str)
 
-    def __init__(self, name):
+    def __init__(self, name:str) -> None:
         self.file_name = name
-
+        return
     def run(self):
         if not ws.connected:
             ws.connect(f"ws://{ip}:8608")
@@ -107,14 +107,14 @@ class Post_file(QThread):
     send_progress = pyqtSignal(float)
     log = pyqtSignal(bool)
 
-    def __init__(self, AbsolutePath, RelativePath):
+    def __init__(self, AbsolutePath:str, RelativePath:str) -> None:
         super().__init__()
         self.file = AbsolutePath
         self.RelativePath = RelativePath
         self.total_chunks = 0
         self.chunk_size = 0
         self.file_size = 0
-
+        return
     def run(self):
         self.chunk_size = 1024 * 1024  # 每次发送 1MB
         self.file_size = os.path.getsize(self.file)
@@ -138,7 +138,7 @@ class Post_file(QThread):
         else:
             self.log.emit(False)
 
-    def send_file(self, file_path, webs):
+    def send_file(self, file_path:str, webs:websocket) -> None:
         with open(file_path, 'rb') as f:
             start_time = time.time()  # 记录开始时间
             print(self.total_chunks, self.chunk_size, self.file_size)
@@ -158,14 +158,15 @@ class Post_file(QThread):
             self.send_progress.emit(1.0)  # 发送进度信号
             webs.close()
             print("\nFile transfer complete.")
+        return
 
 
 class create_file(QThread):
 
-    def __init__(self, name):
+    def __init__(self, name:str) -> None:
         super().__init__()
         self.name = name
-
+        return
     def run(self):
         ws.send(f'CREfile:,{self.name}')
         s = ws.recv()
@@ -175,10 +176,10 @@ class create_file(QThread):
 class delete_file(QThread):
     log = pyqtSignal(bool)
 
-    def __init__(self, name):
+    def __init__(self, name:str) -> None:
         super().__init__()
         self.name = name
-
+        return
     def run(self):
         ws.send(f'DELfile:,{self.name}')
         try:
@@ -193,11 +194,11 @@ class delete_file(QThread):
 class copy_file(QThread):
     log = pyqtSignal(bool)
 
-    def __init__(self, path: str, dest_path: str):
+    def __init__(self, path: str, dest_path: str) -> None:
         super().__init__()
         self.name = get_file_serverName(path)
         self.new_name = get_file_serverName(dest_path)
-
+        return
     def run(self):
         ws.send(f'COPYfile:,{self.name},{self.new_name}')
         try:
@@ -212,11 +213,11 @@ class copy_file(QThread):
 class rename_file(QThread):
     log = pyqtSignal(bool)
 
-    def __init__(self, path: str, new_name: str):
+    def __init__(self, path: str, new_name: str) -> None:
         super().__init__()
         self.name = get_file_serverName(path)
         self.new_name = new_name
-
+        return
     def run(self):
         ws.send(f'RENfile:,{self.name},{self.new_name}')
         try:
@@ -228,7 +229,7 @@ class rename_file(QThread):
             self.log.emit(False)
 
 
-def get_file_serverName(Relative_path: str):
+def get_file_serverName(Relative_path: str) -> str:
     name = Relative_path.replace('\\', '@0@')
     name = name.replace('/', '@0@')
     return name

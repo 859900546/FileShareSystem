@@ -10,9 +10,9 @@ class folder:
         self.date = date
         self.size = size
 
-    def set_son(self, x):
+    def set_son(self, x) -> None:
         self.son_folder.append(x)
-
+        return
     def get_id(self):
         if self.father_folder is None:
             return self.id
