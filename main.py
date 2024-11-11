@@ -5,6 +5,8 @@ import threading
 import time
 from copy import deepcopy
 from functools import partial
+from queue import Queue
+
 from PyQt5.QtCore import Qt, QPoint, pyqtSignal
 from PyQt5.QtGui import QPixmap, QIcon, QImage, QDragEnterEvent, QDropEvent, QKeySequence, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QHBoxLayout, QLabel, QListWidgetItem, QMessageBox, \
@@ -42,6 +44,8 @@ class MainWindow(QMainWindow):
         self.action7 = None
         self.action8 = None
         self.copy_list = []
+        self.post_file_urls: Queue = Queue()
+        self.delete_file_urls: Queue = Queue()
         self.is_shear = False
         self.sort_type = 1  # 排序规则
         self.isreverse = False  # 是否从大到小
@@ -311,19 +315,27 @@ class MainWindow(QMainWindow):
             else:
                 return
         for item in self.selected_items:
-            widget = self.ui.fileListWidget.itemWidget(item)
-            try:
-                os.remove(self.get_relative_path(widget.r_folder))
-            except Exception as e:
-                print(e)
+            self.delete_file_urls.put(self.ui.fileListWidget.itemWidget(item).r_folder)
 
-            del_file_name = self.get_file_servername(widget.r_folder)  # 获取文件名
-            t = websocket_client.delete_file(del_file_name)
-            t.start()
-            delete_folder(widget.r_folder)
-
-        self.send_folder()  # 发送最新结构
+        self.delete_file_slot(True)
         # self.populateList()
+
+    def delete_file_slot(self, log: bool):
+        print(log)
+        if self.delete_file_urls.empty():
+            self.send_folder()  # 发送最新结构
+            return
+        pointer = self.delete_file_urls.get()
+        try:
+            os.remove(self.get_relative_path(pointer))
+        except Exception as e:
+            print(e)
+        del_file_name = self.get_file_servername(pointer)  # 获取文件名
+        self.tt = websocket_client.delete_file(del_file_name)
+        self.tt.log.connect(self.delete_file_slot)
+        self.tt.start()
+        delete_folder(pointer)
+        time.sleep(0.1)
 
     # 输入框
     def get_name(self, flag, old_messge=""):
@@ -568,7 +580,30 @@ class MainWindow(QMainWindow):
         self.progress_dialog.show()
         self.t = websocket_client.Post_file(Absolute_path, Relative_path)
         self.t.send_progress.connect(self.progress_dialog.update_progress)
+        self.t.log.connect(self.Post_file_slot)
         self.t.start()
+
+    def Post_file_slot(self, log):
+        print(log)
+        if self.post_file_urls.empty():
+            return
+        file_url = self.post_file_urls.get()
+        file_path = file_url.toLocalFile()  # 获取第一个文件的本地路径
+        # 获取文件大小，以KB为单位
+        file_size = max(1, os.path.getsize(file_path))
+        t = self.new_file(os.path.basename(file_path), size=int(file_size / 1024))
+        dest_path = self.get_relative_path(t)  # 获取文件在服务器上的路径
+        print(dest_path)
+        # 确保目标目录存在，如果没有则创建
+        dest_dir = os.path.dirname(dest_path)  # 获取目标文件路径的目录部分
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)  # 创建目标文件夹及其父文件夹
+        shutil.copy(file_path, dest_path)
+
+        self.send_folder()
+        print(t.get_id()[:-1])
+        self.Post_file(file_path, t.get_id()[:-1])  # 绝对路径，相对路径
+        time.sleep(0.1)
 
     # 拖拽进入事件
     def dragEnterEvent(self, event: QDragEnterEvent):
@@ -580,7 +615,6 @@ class MainWindow(QMainWindow):
         # 获取拖入的文件路径
         file_urls = event.mimeData().urls()
         file_path = file_urls[0].toLocalFile()  # 获取第一个文件的本地路径
-
         # 判断是否为文件夹
         if os.path.isdir(file_path):
             QMessageBox.warning(self, "警告", "请不要上传文件夹！")
@@ -589,22 +623,10 @@ class MainWindow(QMainWindow):
             # 提示是否上传
             reply = QMessageBox.question(self, '确认', '是否上传文件？', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if reply == QMessageBox.Yes:
+                for file_url in file_urls:
+                    self.post_file_urls.put(file_url)
 
-                file_path = file_urls[0].toLocalFile()  # 获取第一个文件的本地路径
-                # 获取文件大小，以KB为单位
-                file_size = os.path.getsize(file_path)
-                t = self.new_file(os.path.basename(file_path), size=int(file_size / 1024))
-                dest_path = self.get_relative_path(t)  # 获取文件在服务器上的路径
-                print(dest_path)
-                # 确保目标目录存在，如果没有则创建
-                dest_dir = os.path.dirname(dest_path)  # 获取目标文件路径的目录部分
-                if not os.path.exists(dest_dir):
-                    os.makedirs(dest_dir)  # 创建目标文件夹及其父文件夹
-                shutil.copy(file_path, dest_path)
-
-                self.send_folder()
-                print(t.get_id()[:-1])
-                self.Post_file(file_path, t.get_id()[:-1])  # 绝对路径，相对路径
+                self.Post_file_slot(True)
             else:
                 return
             # 判断是否为文件夹

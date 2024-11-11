@@ -10,7 +10,7 @@ ip = '127.0.0.1'
 
 try:
     ws = websocket.WebSocket()
-    ws.connect("ws://127.0.0.1:8608")
+    ws.connect(f"ws://{ip}:8608")
 except:
     pass
 
@@ -32,15 +32,15 @@ class loop_connect(QThread):
             try:
                 ws.send(',')
                 self.log.emit(True)
-                print("心跳检测正常：", get_date())
+            # print("心跳检测正常：", get_date())
             except websocket.WebSocketConnectionClosedException:
                 print("WebSocket 连接已关闭")
                 self.log.emit(False)
-                ws.connect("ws://127.0.0.1:8608")
+                ws.connect(f"ws://{ip}:8608")
             except Exception as e:
                 print("WebSocket 连接异常：", e)
                 self.log.emit(False)
-                ws.connect("ws://127.0.0.1:8608")
+                ws.connect(f"ws://{ip}:8608")
             time.sleep(self.s)
 
 
@@ -59,7 +59,7 @@ class Get_folder(QThread):
     new_data = pyqtSignal(str)
 
     def run(self):
-        #  ws.connect("ws://112.74.184.16:8608")
+        #  ws.connect(f"ws://{ip}:8608")
         try:
             ws.send(f'GETfolder:,{os_id}')
             s = ws.recv()
@@ -73,7 +73,7 @@ class Post_folder(QThread):
     log = pyqtSignal(bool)
 
     def run(self):
-        # ws.connect("ws://112.74.184.16:8608")
+        # ws.connect(f"ws://{ip}:8608")
         if self.message is None:
             return
         try:
@@ -97,7 +97,7 @@ class Get_file(QThread):
 
     def run(self):
         if not ws.connected:
-            ws.connect("ws://112.74.184.16:8608")
+            ws.connect(f"ws://{ip}:8608")
         ws.send('GETfile:' + self.file_name)
         s = ws.recv()
         self.new_data.emit(s)
@@ -120,14 +120,21 @@ class Post_file(QThread):
         self.file_size = os.path.getsize(self.file)
         self.total_chunks = (self.file_size + self.chunk_size - 1) // self.chunk_size  # 总共的分块数
         ws.send(f'POSTfile:,{self.total_chunks},{self.RelativePath}')
-        s = ws.recv()
+        try:
+            s = ws.recv()
+        except Exception as e:
+            print(e)
+            self.log.emit(False)
+            return
         if s == "Post:startfile":
             webss = websocket.WebSocket()  # 发送数据端口
             try:
-                webss.connect("ws://127.0.0.1:8609")  # 发送数据端口
+                webss.connect(f"ws://{ip}:8609")  # 发送数据端口
             except:
+                self.log.emit(False)
                 return
             self.send_file(self.file, webss)  # 发送数据
+            self.log.emit(True)
         else:
             self.log.emit(False)
 
@@ -148,6 +155,7 @@ class Post_file(QThread):
 
                 # 显示进度 sys.stdout.write( f"\rSending chunk {chunk_num + 1}/{self.total_chunks} ({progress:.2f}%) -
                 # Estimated time left: {estimated_time_left:.2f}s") sys.stdout.flush()
+            self.send_progress.emit(1.0)  # 发送进度信号
             webs.close()
             print("\nFile transfer complete.")
 
@@ -165,6 +173,8 @@ class create_file(QThread):
 
 
 class delete_file(QThread):
+    log = pyqtSignal(bool)
+
     def __init__(self, name):
         super().__init__()
         self.name = name
@@ -174,8 +184,10 @@ class delete_file(QThread):
         try:
             s = ws.recv()
             print(s)
+            self.log.emit(True)
         except Exception as e:
             print(e)
+            self.log.emit(False)
 
 
 def get_file_serverName(Relative_path: str):
