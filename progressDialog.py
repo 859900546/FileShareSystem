@@ -1,3 +1,4 @@
+from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QProgressBar, QVBoxLayout, QLabel, QDialog
 
 
@@ -16,13 +17,13 @@ class ProgressDialog(QDialog):
         layout.addWidget(self.progress_bar)
 
         # 创建状态标签
-        self.status_label = QLabel("正在下载...", self)
+        self.status_label = QLabel("正在上传...", self)
         layout.addWidget(self.status_label)
 
         self.setLayout(layout)
 
     def update_progress(self, value):
         self.progress_bar.setValue(int(value * 100))
-        if value * 100 >= 100:
-            self.status_label.setText("下载完成！")
-            self.close()  # 关闭弹窗
+        if value >= 1.0:
+            self.status_label.setText("上传完成！")
+            QTimer.singleShot(1000, self.close)  # 延时关闭对话框
