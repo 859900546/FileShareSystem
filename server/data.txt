@@ -20,30 +20,16 @@
     - V HUB.lnk,1,2024-11-10 18:14:33,24,system
   - obb,0,2023-12-23 15:25:18,0,system
     - V HUB.lnk,1,2024-11-10 18:14:33,24,system
-- AndroLua,0,2023-12-23 15:25:18,0,system
-  - Offsets.h,1,2024-11-11 11:11:25,1,system
-  - png.h,1,2024-11-11 11:11:25,71,system
-  - stb_image.h,1,2024-11-11 11:11:25,15,system
-  - timer.h,1,2024-11-11 11:11:25,5,system
-  - cJSON.c,1,2024-11-11 11:11:25,78,system
-  - cJSON.h,1,2024-11-11 11:11:25,15,system
-  - Encrypt.h,1,2024-11-11 11:11:25,10,system
-  - hook.h,1,2024-11-11 11:11:25,1,system
-  - http.h,1,2024-11-11 11:11:25,11,system
-  - Image.h,1,2024-11-11 11:11:25,1,system
-- app,0,2023-12-23 15:25:18,0,system
-  - 2.bat,1,2024-11-11 11:03:03,0,system
-  - Android.mk,1,2024-11-11 11:03:03,2,system
-  - 1.bat,1,2024-11-11 11:03:03,0,system
-  - 1,1,2024-11-07 11:10:07,91,system
   - AggregatorHost.exe,1,2024-11-10 22:20:40,65,system
-  - cJSON.c,1,2024-11-11 11:11:25,78,system
-  - cJSON.h,1,2024-11-11 11:11:25,15,system
-  - hook.h,1,2024-11-11 11:11:25,1,system
-  - http.h,1,2024-11-11 11:11:25,11,system
-  - png.h,1,2024-11-11 11:11:25,71,system
-  - stb_image.h,1,2024-11-11 11:11:25,15,system
-  - timer.h,1,2024-11-11 11:11:25,5,system
+  - run_log.py,1,2024-11-14 09:25:57,1,system
+  - wwqy.onnx,1,2024-11-14 09:25:57,27537,system
+  - dist_count.py,1,2024-11-14 09:25:57,1,system
+  - dml_double.py,1,2024-11-14 09:25:57,1,system
+  - dml_infer.py,1,2024-11-14 09:25:57,9,system
+  - new.txt,1,2024-11-14 09:25:57,2,system
+  - rocblas.deb,1,2024-11-14 09:25:57,3843,system
+- AndroLua,0,2023-12-23 15:25:18,0,system
+- app,0,2023-12-23 15:25:18,0,system
 - bmsq,0,2023-12-23 15:25:18,0,system
   - yhju,0,2023-12-23 15:25:18,0,system
     - com.iouo.pubg,0,2023-12-23 15:25:18,0,system
@@ -53,16 +39,19 @@
       - io.txt,1,2023-12-23 15:25:18,75,system
   - obb,0,2023-12-23 15:25:18,0,system
     - 1.txt,1,2024-11-09 13:50:32,17,system
+  - test,1,2024-11-11 13:31:05,0,system
 - Cyuiot,0,2023-12-23 15:25:18,0,system
   - app,0,2023-12-23 15:25:18,0,system
     - 11,1,2024-11-07 11:11:35,71,system
   - 1.bat,1,2024-11-11 11:05:09,0,system
 - jni,0,2023-12-23 15:25:18,0,system
-  - .0000000,1,2023-12-23 15:25:18,17,system
-    - testetstete,1,2023-12-23 15:25:18,71,system
-  - 11,1,2023-12-24 18:42:18,88,system
-  - 1,1,2023-12-24 18:54:40,66,system
-  - 11,1,2023-12-24 18:54:40,50,system
-  - common-gun.txt,1,2024-11-10 21:58:28,17,system
+  - dml_infer.py,1,2024-11-14 10:19:02,9,system
+  - dml_infer_gun_class.py,1,2024-11-14 10:19:02,7,system
+  - dist_count.py,1,2024-11-14 10:19:02,1,system
 - 11,0,2023-12-24 19:03:34,0,system
+  - V HUB.lnk,1,2024-11-10 18:14:33,24,system
+  - common-gun.txt,1,2024-11-14 10:20:28,1,system
 - AggregatorHost.exe,1,2024-11-10 22:20:40,65,system
+- 6618ÇÞÊÒ¹«Ô¼.docx,1,2024-11-11 16:33:36,15,system
+- Test.EXE,1,2024-11-13 22:52:05,6699,system
+- log.mp4,1,2024-11-13 23:46:58,9,system

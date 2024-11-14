@@ -1,5 +1,5 @@
 class folder:
-    def __init__(self, name="", son_folder=None, father_folder=None, check_file=True, i="", date="", size=0,
+    def __init__(self, name="", son_folder=None, father_folder=None, check_file=True, i="", date="", size: int = 0,
                  builder="system"):
         if son_folder is None:
             son_folder = []
@@ -9,12 +9,13 @@ class folder:
         self.id = i
         self.check_file = check_file  # 1表示文件，0表示文件夹
         self.date = date
-        self.size = size
+        self.size: int = size
         self.builder = builder  # 构建者
 
     def set_son(self, x) -> None:
         self.son_folder.append(x)
         return
+
     def get_id(self):
         if self.father_folder is None:
             return self.id

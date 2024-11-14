@@ -1,3 +1,4 @@
 websockets == 13.1
 websocket-client == 1.8.0
 PyQt5 == 5.15.10
+requests == 2.32.3
