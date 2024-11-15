@@ -6,7 +6,11 @@ from PyQt5.QtCore import pyqtSignal
 import websocket
 from pointStruct.analysis_data import *
 
-ip = '172.17.251.208'
+try:
+    with open('./config.ini', 'r') as f:
+        ip = f.readline().strip()
+except:
+    ip = '127.0.0.1'
 timeout: int = 200
 ws = websocket.WebSocket()
 
@@ -32,7 +36,7 @@ class send(QThread):
 
 class loop_connect(QThread):
     log: pyqtSignal = pyqtSignal(bool)
-    s = 0
+    delay = 0
 
     def run(self):
         while True:
@@ -48,13 +52,13 @@ class loop_connect(QThread):
                 except:
                     pass
             except Exception as e:
-                print("WebSocket 连接异常：", e)
+                # print("WebSocket 连接异常：", e)
                 self.log.emit(False)
                 try:
                     ws.connect(f"ws://{ip}:8608", timeout=timeout)
-                except:
-                    pass
-            time.sleep(self.s)
+                except Exception as e:
+                    print(e)
+            time.sleep(self.delay)
 
 
 class recv(QThread):
@@ -131,7 +135,7 @@ class Get_file(QThread):
         if not ws.connected:
             start_ws()
         try:
-            ws.send('GETfile:' + self.file_name)
+            ws.send(f'GETfile:{self.file_name},{os_id}')
             s = ws.recv()
             self.new_data.emit(s)
         except Exception as e:
@@ -158,7 +162,7 @@ class Post_file(QThread):
         if not ws.connected:
             start_ws()
         try:
-            ws.send(f'POSTfile:,{self.total_chunks},{self.RelativePath}')
+            ws.send(f'POSTfile:,{self.total_chunks},{self.RelativePath},{os_id}')
             s = ws.recv()
         except Exception as e:
             print(e)
@@ -203,15 +207,16 @@ class download_file(QThread):
         self.server_name = get_file_serverName(pointer.get_id()[:-1])
         self.name = pointer.get_id()[:-1].replace('/', '\\')
         self.root_path = 'static\\files'
-        self.file_size:int = int(pointer.size) * 1024
+        self.file_size: int = int(pointer.size) * 1024
+        # self.file_size = pointer.size
         return
 
     def run(self):
         path = self.root_path + self.name
         print(self.server_name)
         dest_dir = os.path.dirname(path)  # 获取目标文件路径的目录部分
-        chunk_size:int = 1024  # 每次下载 1MB
-        total_size:int = 0
+        chunk_size: int = 1024  # 每次下载 1MB
+        total_size: int = 0
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)  # 创建目标文件夹及其父文件夹
         with requests.get(f"http://172.17.251.208:6618/static/files/{self.server_name}", stream=True) as response:
@@ -238,7 +243,7 @@ class create_file(QThread):
         if not ws.connected:
             start_ws()
         try:
-            ws.send(f'CREfile:,{self.name}')
+            ws.send(f'CREfile:,{self.name},{os_id}')
             s = ws.recv()
             print(s)
         except Exception as e:
@@ -258,7 +263,7 @@ class delete_file(QThread):
         if not ws.connected:
             start_ws()
         try:
-            ws.send(f'DELfile:,{self.name}')
+            ws.send(f'DELfile:,{self.name},{os_id}')
             s = ws.recv()
             print(s)
             self.log.emit(True)
@@ -282,7 +287,7 @@ class copy_file(QThread):
         if not ws.connected:
             start_ws()
         try:
-            ws.send(f'COPYfile:,{self.name},{self.new_name}')
+            ws.send(f'COPYfile:,{self.name},{self.new_name},{os_id}')
             s = ws.recv()
             print(s)
             self.log.emit(True)
@@ -304,7 +309,7 @@ class rename_file(QThread):
         if not ws.connected:
             start_ws()
         try:
-            ws.send(f'RENfile:,{self.name},{self.new_name}')
+            ws.send(f'RENfile:,{self.name},{self.new_name},{os_id}')
             s = ws.recv()
             print(s)
             self.log.emit(True)

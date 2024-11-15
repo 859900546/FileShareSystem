@@ -11,7 +11,7 @@ name2icon = {
     'png': './rec/icon/jpg_icon.png',
     'gif': './rec/icon/jpg_icon.png',
     'text': './rec/icon/text_icon.png',
-    'txt': './rec/icon/text_icon.png',
+    'txt': './rec/icon/txt_icon.png',
     'doc': './rec/icon/pdf_icon.png',
     'docx': './rec/icon/pdf_icon.png',
     'pdf': './rec/icon/pdf_icon.png',

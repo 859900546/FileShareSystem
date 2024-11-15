@@ -3,11 +3,16 @@ import websockets
 from datetime import datetime
 import server_fun
 from server_fun import handle_postfile, handle_postfolder, handle_getfolder
+from database.User import User
+from database.File import File
+from database.mysqlOperator import create_db_connection
 
 connected_clients = set()
 
 name = ''
 size = 0
+
+db_conn = create_db_connection()
 
 
 # 处理客户端消息
@@ -30,6 +35,11 @@ async def handle_client(websocket, path):
                 await asyncio.wait_for(websocket.send('Post:startfile'), timeout=10)
                 name = message[2]
                 size = int(message[1])
+                try:
+                    file = File(name, server_fun.root_path, message[3], size, name.split('.')[-1])
+                    file.insert_file(db_conn)  # 插入文件信息到数据库
+                except Exception as e:
+                    print(e)
             # await handle_postfile(websocket, message[1], message[2])
 
             elif 'GETfolder' in message[0]:
@@ -39,19 +49,49 @@ async def handle_client(websocket, path):
                 pass
             elif 'DELfile' in message[0]:  # 删除文件
                 await server_fun.handle_deletefile(websocket, message[1])
+                try:
+                    file = File(message[1])
+                    file.delete_file(db_conn)  # 删除文件信息
+                except Exception as e:
+                    print(e)
 
             elif 'CREfile' in message[0]:  # 创建文件
                 await server_fun.handle_createfile(websocket, message[1])
+                try:
+                    file = File(message[1], server_fun.root_path, message[2], 0, name.split('.')[-1])
+                    file.insert_file(db_conn)  # 插入文件信息到数据库
+                except Exception as e:
+                    print(e)
 
             elif 'COPYfile' in message[0]:  # 复制文件
                 await server_fun.handle_copyfile(websocket, message[1], message[2])
 
             elif 'RENfile' in message[0]:  # 重命名文件
                 await server_fun.handle_renamefile(websocket, message[1], message[2])
+                try:
+                    file = File(message[2], server_fun.root_path, message[3], 0, name.split('.')[-1])
+                    file.insert_file(db_conn)  # 插入文件信息到数据库
+                    file_old = File(message[1])
+                    file_old.delete_file(db_conn)  # 删除文件信息
+                except Exception as e:
+                    print(e)
 
             elif 'hello_server' in message[0]:
                 with open('message.txt', "r") as f:
                     await asyncio.wait_for(websocket.send(f.readlines(), timeout=10))
+
+            elif 'register' in message[0]:
+                try:
+                    user = User(message[1], message[2], message[3],True)
+                    user.insert_user(db_conn)  # 插入用户信息到数据库
+                except Exception as e:
+                    print(e)
+            elif 'login' in message[0]:
+                user = User(message[1], message[2],message[3],False)
+                if user.login(db_conn):
+                    await asyncio.wait_for(websocket.send('login_success', timeout=10))
+                else:
+                    await asyncio.wait_for(websocket.send('login_failed', timeout=10))
             else:
                 pass
     except asyncio.TimeoutError:

@@ -28,7 +28,10 @@
   - dml_infer.py,1,2024-11-14 09:25:57,9,system
   - new.txt,1,2024-11-14 09:25:57,2,system
   - rocblas.deb,1,2024-11-14 09:25:57,3843,system
+  - PotPlayer 64 bit.lnk,1,2024-11-14 10:36:05,1,system
 - AndroLua,0,2023-12-23 15:25:18,0,system
+  - common-gun.txt,1,2024-11-14 19:52:02,1,system
+  - gun.txt,1,2024-11-14 19:52:02,1,system
 - app,0,2023-12-23 15:25:18,0,system
 - bmsq,0,2023-12-23 15:25:18,0,system
   - yhju,0,2023-12-23 15:25:18,0,system
@@ -55,3 +58,17 @@
 - 6618寝室公约.docx,1,2024-11-11 16:33:36,15,system
 - Test.EXE,1,2024-11-13 22:52:05,6699,system
 - log.mp4,1,2024-11-13 23:46:58,9,system
+- 推理学习交流-离线版本.rar,1,2024-11-14 10:36:05,80478,system
+- jpg,0,2024-11-15 10:21:17,0,system
+  - mp3_icon.png,1,2024-11-15 10:20:14,364,system
+  - mp4_icon.png,1,2024-11-15 10:20:14,448,system
+  - pdf_icon.png,1,2024-11-15 10:20:14,140,system
+  - py_icon.png,1,2024-11-15 10:20:14,703,system
+  - text_icon.png,1,2024-11-15 10:20:14,348,system
+  - txt_icon.png,1,2024-11-15 10:20:14,83,system
+  - zip_icon.png,1,2024-11-15 10:20:14,496,system
+  - cpp_icon.png,1,2024-11-15 10:20:14,339,system
+  - exe_icon.png,1,2024-11-15 10:20:14,291,system
+  - h_icon.png,1,2024-11-15 10:20:14,406,system
+  - java_icon.png,1,2024-11-15 10:20:14,707,system
+  - jpg_icon.png,1,2024-11-15 10:20:14,404,system

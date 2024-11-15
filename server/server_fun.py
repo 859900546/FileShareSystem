@@ -7,7 +7,7 @@ from websockets import ConnectionClosed
 
 mutex = 1
 data_path = 'data.txt'
-with open(data_path, "r") as f:
+with open(data_path, "r", encoding='gbk') as f:
     data = f.readlines()
 max_time = 10
 

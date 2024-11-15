@@ -1,5 +1,8 @@
+import datetime
+
+
 class File:
-    def __init__(self, fname, fpath, uid, fsize, ftype, fdate, findex):
+    def __init__(self, fname: str, fpath:str = None, uid:str = None, fsize:int = None, ftype:str = None, fdate:str = str(datetime.datetime.now())[0:19], findex:int = None):
         self.fname = fname
         self.fpath = fpath
         self.uid = uid
@@ -22,6 +25,15 @@ class File:
         cursor = db_connection.cursor()
         query = "UPDATE file_ SET fname=%s, fpath=%s, fsize=%s, ftype=%s, fdate=%s, findex=%s WHERE uid=%s AND fname=%s"
         values = (self.fname, self.fpath, self.fsize, self.ftype, self.fdate, self.findex, self.uid, self.fname)
+        cursor.execute(query, values)
+        db_connection.commit()
+        cursor.close()
+
+    # 删除文件信息
+    def delete_file(self, db_connection):
+        cursor = db_connection.cursor()
+        query = "DELETE FROM file_ WHERE fname=%s"
+        values = self.fname
         cursor.execute(query, values)
         db_connection.commit()
         cursor.close()
