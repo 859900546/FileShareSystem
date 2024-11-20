@@ -7,6 +7,8 @@ from loguru import logger
 from ui.login_form import Ui_Frame as ui_form
 from ui.main_ui import MainWindow
 from win.register_form import register_form
+from Websocket_filesystem import websocket_client
+from pointStruct.analysis_data import os_id
 
 
 class login_form(ui_form, QFrame):
@@ -39,6 +41,8 @@ class login_form(ui_form, QFrame):
         self.github_pushButton.clicked.connect(self.github_pushButton_event)
         self.phone_pushButton.clicked.connect(self.phone_pushButton_event)
         self.email_pushButton.clicked.connect(self.email_pushButton_event)
+        self.t = None
+        self.user_name = ""
 
     # 关闭的逻辑
     def close_event(self):
@@ -61,13 +65,21 @@ class login_form(ui_form, QFrame):
         if user_name == "" or password == "":
             QMessageBox.information(self, "错误提示", "请输入用户名密码")
             return
+        self.user_name = user_name
+        self.t = websocket_client.Login(user_name, password, user_name+"_"+os_id)
+        self.t.log.connect(self.login_success)
+        self.t.start()
+
+    def login_success(self, log: bool):
+        if not log:
+            QMessageBox.information(self, "错误提示", "用户名或密码错误")
+            return
         self.window = MainWindow()
         self.window.Heartbert.delay = 3
         self.window.init()
         self.close()
         self.window.show()
-        QMessageBox.information(self, f"登录成功", f"欢迎用户：{user_name}\n")
-
+        QMessageBox.information(self, f"登录成功", f"欢迎用户：{self.user_name}\n")
 
     def forget_password_pushButton_event(self):
         logger.info("忘记密码")

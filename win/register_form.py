@@ -4,6 +4,10 @@ from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QFrame, QMessageBox
 from loguru import logger
 from ui.register_form import Ui_Frame as ui_form
+from database.User import User
+from database.mysqlOperator import create_db_connection
+from pointStruct.analysis_data import os_id
+from Websocket_filesystem import websocket_client
 
 
 class register_form(ui_form, QFrame):
@@ -29,6 +33,8 @@ class register_form(ui_form, QFrame):
         self.phone_pushButton.clicked.connect(self.phone_pushButton_event)
         self.email_pushButton.clicked.connect(self.email_pushButton_event)
 
+        self.t = None
+
     # 关闭的逻辑
     def close_event(self):
         logger.info("关闭登录窗口")
@@ -43,24 +49,30 @@ class register_form(ui_form, QFrame):
         if password != password2:
             QMessageBox.information(self, "错误提示", "两次密码输入不对，请重新输入")
             return
-        try:
-            QMessageBox.information(self, "注册成功", "注册成功，请登录")
-            self.close()
-        except:
-            QMessageBox.information(self, "错误提示", "用户名重复，请重新注册")
+
+        self.t = websocket_client.Register(user_name, password, user_name + "_" + os_id)
+        self.t.start()
+        self.t.log.connect(self.register_success_event)
+
+    def register_success_event(self, log):
+        if not log:
+            QMessageBox.information(self, "错误提示", "注册失败,用户名重复")
+            return
+        QMessageBox.information(self, "注册成功", "注册成功，请登录")
+        self.close()
 
     def github_pushButton_event(self):
         logger.info("跳转到github网站")
         QMessageBox.information(self, "GitHub", "wp19991")
-        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://github.com/wp19991"))
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://github.com/859900546/FileShareSystem"))
 
     def phone_pushButton_event(self):
         logger.info("手机号")
-        QMessageBox.information(self, "手机号", "手机号\n13170190193")
+        QMessageBox.information(self, "手机号", "手机号\n1807602575")
 
     def email_pushButton_event(self):
         logger.info("邮箱")
-        QMessageBox.information(self, "邮箱", "邮箱\nwpycahrm@outlook.com")
+        QMessageBox.information(self, "邮箱", "邮箱\n859900546@qq.com")
 
     def mousePressEvent(self, e: QMouseEvent):
         if e.button() == Qt.LeftButton:

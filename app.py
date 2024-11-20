@@ -6,7 +6,6 @@ from win.splash.splash import SplashScreen
 import sys
 from PyQt5.QtWidgets import QApplication
 from Websocket_filesystem import websocket_client
-from ui.main_ui import MainWindow
 
 os.chdir(os.path.dirname(__file__))
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))

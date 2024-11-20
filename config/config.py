@@ -1,17 +1,19 @@
-from pydantic import BaseSettings
 
 
-class Settings(BaseSettings):
+class Settings:
     DEBUG: bool = True
 
-    TITLE: str = "pyqt5_example"
+    TITLE: str = "文件管理系统"
 
     # Mysql
     MYSQL_USERNAME: str = "root"
-    MYSQL_PASSWORD: str = "password"
+    MYSQL_PASSWORD: str = "root"
     MYSQL_HOST: str = "127.0.0.1"
     MYSQL_PORT: int = 3306
-    MYSQL_DATABASE: str = 'pyqt5_example_db'
+    MYSQL_DATABASE: str = 'filesharesystem'
+
+    ip: str = "127.0.0.1"
+    port: int = 5000
 
 
 settings = Settings()

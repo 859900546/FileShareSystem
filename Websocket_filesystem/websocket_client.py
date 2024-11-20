@@ -5,12 +5,9 @@ from PyQt5.QtCore import QThread
 from PyQt5.QtCore import pyqtSignal
 import websocket
 from pointStruct.analysis_data import *
+from config import config
 
-try:
-    with open('./config.ini', 'r') as f:
-        ip = f.readline().strip()
-except:
-    ip = '127.0.0.1'
+ip = config.settings.ip
 timeout: int = 200
 ws = websocket.WebSocket()
 
@@ -323,6 +320,59 @@ def get_file_serverName(Relative_path: str) -> str:
     name = Relative_path.replace('\\', '@0@')
     name = name.replace('/', '@0@')
     return name
+
+
+class Login(QThread):
+    log = pyqtSignal(bool)
+
+    def __init__(self, username: str, password: str, uid: str) -> None:
+        super().__init__()
+        self.username = username
+        self.password = password
+        self.uid = uid
+        return
+
+    def run(self):
+        if not ws.connected:
+            start_ws()
+        try:
+            print(f'login:,{self.username},{self.password},{self.uid}')
+            ws.send(f'login:,{self.username},{self.password},{self.uid}')
+            s = ws.recv()
+            print(s)
+            if s == "login:success":
+                self.log.emit(True)
+            else:
+                self.log.emit(False)
+        except Exception as e:
+            print(e)
+            self.log.emit(False)
+
+
+class Register(QThread):
+    log = pyqtSignal(bool)
+
+    def __init__(self, username: str, password: str, uid: str) -> None:
+        super().__init__()
+        self.username = username
+        self.password = password
+        self.uid = uid
+        return
+
+    def run(self):
+        if not ws.connected:
+            start_ws()
+        try:
+            ws.send(f'register:,{self.username},{self.password},{self.uid}')
+            s = ws.recv()
+            print(s)
+            if s == "register:success":
+                self.log.emit(True)
+            else:
+                self.log.emit(False)
+        except Exception as e:
+            print(e)
+            self.log.emit(False)
 # test = Post_file(r"D:\Desktop\test.pdf")
 # test.start()
 # test.wait()

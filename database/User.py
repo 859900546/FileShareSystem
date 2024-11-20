@@ -2,7 +2,7 @@ import datetime
 
 
 class User:
-    def __init__(self, uname: str, uid: str, upassword: str, is_adm: bool, create_date: str = str(datetime.datetime.now())[0:19]):
+    def __init__(self, uname: str, uid: str, upassword: str, is_adm: bool = False, create_date: str = str(datetime.datetime.now())[0:19]):
         self.uname = uname
         self.uid = uid
         self.upassword = upassword

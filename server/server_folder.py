@@ -78,20 +78,24 @@ async def handle_client(websocket, path):
 
             elif 'hello_server' in message[0]:
                 with open('message.txt', "r") as f:
-                    await asyncio.wait_for(websocket.send(f.readlines(), timeout=10))
+                    await asyncio.wait_for(websocket.send(f.readlines()), timeout=10)
 
             elif 'register' in message[0]:
+                print(message)
                 try:
-                    user = User(message[1], message[2], message[3],True)
+                    user = User(uname=message[1], upassword=message[2], uid=message[3])
                     user.insert_user(db_conn)  # 插入用户信息到数据库
+                    await asyncio.wait_for(websocket.send('register:success'), timeout=10)
                 except Exception as e:
+                    await asyncio.wait_for(websocket.send('register:failed'), timeout=10)
                     print(e)
             elif 'login' in message[0]:
-                user = User(message[1], message[2],message[3],False)
+                print(message)
+                user = User(uname=message[1], upassword=message[2], uid=message[3])
                 if user.login(db_conn):
-                    await asyncio.wait_for(websocket.send('login_success', timeout=10))
+                    await asyncio.wait_for(websocket.send('login:success'), timeout=10)
                 else:
-                    await asyncio.wait_for(websocket.send('login_failed', timeout=10))
+                    await asyncio.wait_for(websocket.send('login:failed'), timeout=10)
             else:
                 pass
     except asyncio.TimeoutError:

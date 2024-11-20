@@ -1,13 +1,14 @@
 import datetime
 import mysql.connector
+from config.config import settings
 
 
 def create_db_connection():
     return mysql.connector.connect(
-        host="localhost",  # 数据库主机
-        user="root",  # 数据库用户名
-        password="root",  # 数据库密码
-        database="FileShareSystem"  # 数据库名称
+        host=settings.MYSQL_HOST,  # 数据库主机
+        user=settings.MYSQL_USERNAME,  # 数据库用户名
+        password=settings.MYSQL_PASSWORD,  # 数据库密码
+        database=settings.MYSQL_DATABASE  # 数据库名称
     )
 
 
