@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
         self.t = None
         self.tt = None
         self.progress_dialog = None
-        self.root_path = './static/files'
+        self.root_path = '.\\static\\files'
 
         # 启用拖拽功能
         self.setAcceptDrops(True)
@@ -107,7 +107,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_4.clicked.connect(self.recv_folder)  # 刷新
         self.ui.pushButton_4.setText('')
         self.ui.pushButton_4.setStyleSheet('background-color: rgba(255, 255, 255, 100)')
-        image = QImage('./rec/icon/flush_icon.png')  # 替换成你想要的图片路径
+        image = QImage('./res/icon/flush_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         scaled_pixmap = pixmap.scaled(25, 25)
         icon = QIcon(scaled_pixmap)
@@ -117,7 +117,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_5.clicked.connect(self.button_return)
         self.ui.pushButton_5.setText('')
         self.ui.pushButton_5.setStyleSheet('background-color: rgba(255, 255, 255, 100);')
-        image = QImage('./rec/icon/return_icon.png')  # 替换成你想要的图片路径
+        image = QImage('./res/icon/return_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         scaled_pixmap = pixmap.scaled(25, 25)
         icon = QIcon(scaled_pixmap)
@@ -126,14 +126,14 @@ class MainWindow(QMainWindow):
 
         self.ui.pushButton_3.setText('')
         self.ui.pushButton_3.setStyleSheet('background-color: rgba(255, 255, 255, 100);')
-        image = QImage('./rec/icon/menu_icon.png')  # 替换成你想要的图片路径
+        image = QImage('./res/icon/menu_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         scaled_pixmap = pixmap.scaled(25, 25)
         icon = QIcon(scaled_pixmap)
         self.ui.pushButton_3.setIcon(icon)
         self.ui.pushButton_3.setIconSize(pixmap.size())
 
-        image = QImage('./rec/icon/folder_icon.png')  # 替换成你想要的图片路径
+        image = QImage('./res/icon/folder_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         scaled_pixmap = pixmap.scaled(25, 25)
         icon = QIcon(scaled_pixmap)
@@ -141,11 +141,11 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(icon)
         # 菜单栏
         self.menu = QMenu(self)
-        image = QImage('./rec/icon/new_file.png')  # 替换成你想要的图片路径
+        image = QImage('./res/icon/new_file.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
         action1 = QAction(icon, "新建文件", self)
-        image = QImage('./rec/icon/folder_icon.png')  # 替换成你想要的图片路径
+        image = QImage('./res/icon/folder_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
         action2 = QAction(icon, "新建文件夹", self)
@@ -159,15 +159,15 @@ class MainWindow(QMainWindow):
 
         # 右键菜单栏
         self.menu_2 = QMenu(self)
-        image = QImage('./rec/icon/new_file.png')  # 替换成你想要的图片路径
+        image = QImage('./res/icon/new_file.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
         self.action1 = QAction(icon, "新建文件", self)
-        image = QImage('./rec/icon/folder_icon.png')  # 替换成你想要的图片路径
+        image = QImage('./res/icon/folder_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
         self.action2 = QAction(icon, "新建文件夹", self)
-        image = QImage('./rec/icon/delete_icon.png')  # 替换成你想要的图片路径
+        image = QImage('./res/icon/delete_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
         self.action3 = QAction(icon, "删除", self)
@@ -178,7 +178,7 @@ class MainWindow(QMainWindow):
         self.action7 = QAction("重命名", self)
         self.action9 = QAction("删除本地文件", self)
 
-        image = QImage('./rec/icon/flush_icon.png')  # 替换成你想要的图片路径
+        image = QImage('./res/icon/flush_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
         self.action8 = QAction(icon, "刷新", self)
@@ -241,7 +241,7 @@ class MainWindow(QMainWindow):
             item = QListWidgetItem(self.ui.fileListWidget)
             # item.setSizeHint(item_widget.sizeHint())
             item.setText('当前目录为空')
-            image = QImage('./rec/icon/file_icon_2.png')  # 替换成你想要的图片路径
+            image = QImage('./res/icon/file_icon_2.png')  # 替换成你想要的图片路径
             pixmap = QPixmap.fromImage(image)
             scaled_pixmap = pixmap.scaled(50, 50)
             icon = QIcon(scaled_pixmap)
@@ -384,16 +384,19 @@ class MainWindow(QMainWindow):
                 pass
             else:
                 return
+        flag = False
         for item in self.selected_items:
             widget = self.ui.fileListWidget.itemWidget(item)
             if widget.r_folder.check_file == 1:
+                flag = True
                 try:
                     os.remove(self.get_relative_path(widget.r_folder))
                 except Exception as e:
                     print(e)
-                QMessageBox.information(self, "提示", "文件已删除！")
             else:
                 QMessageBox.warning(self, "警告", "不能对文件夹操作！")
+        if flag:
+            QMessageBox.information(self, "提示", "文件已删除！")
 
     # 输入框
     def get_name(self, flag, old_messge=""):

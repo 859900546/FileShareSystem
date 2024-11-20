@@ -24,7 +24,7 @@ class ProgressDialog(QDialog):
         layout.addWidget(self.status_label)
 
         # 创建图标
-        image = QImage('./rec/mainicon/folder_icon_1.png')  # 替换成你想要的图片路径
+        image = QImage('./res/mainicon/folder_icon_1.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         icon = QIcon(pixmap)
         self.setWindowIcon(icon)

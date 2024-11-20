@@ -3,27 +3,27 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel
 
 name2icon = {
-    'folder': './rec/icon/folder_icon.png',
-    'file': './rec/icon/file_icon.png',
-    'mp4': './rec/icon/mp4_icon.png',
-    'mp3': './rec/icon/mp3_icon.png',
-    'jpg': './rec/icon/jpg_icon.png',
-    'png': './rec/icon/jpg_icon.png',
-    'gif': './rec/icon/jpg_icon.png',
-    'text': './rec/icon/text_icon.png',
-    'txt': './rec/icon/txt_icon.png',
-    'doc': './rec/icon/pdf_icon.png',
-    'docx': './rec/icon/pdf_icon.png',
-    'pdf': './rec/icon/pdf_icon.png',
-    'zip': './rec/icon/zip_icon.png',
-    'rar': './rec/icon/zip_icon.png',
-    'exe': './rec/icon/exe_icon.png',
-    'py': './rec/icon/py_icon.png',
-    'cpp': './rec/icon/cpp_icon.png',
-    'java': './rec/icon/java_icon.png',
-    'html': './rec/icon/h_icon.png',
-    'h': './rec/icon/h_icon.png',
-    'c': './rec/icon/cpp_icon.png',
+    'folder': './res/icon/folder_icon.png',
+    'file': './res/icon/file_icon.png',
+    'mp4': './res/icon/mp4_icon.png',
+    'mp3': './res/icon/mp3_icon.png',
+    'jpg': './res/icon/jpg_icon.png',
+    'png': './res/icon/jpg_icon.png',
+    'gif': './res/icon/jpg_icon.png',
+    'text': './res/icon/text_icon.png',
+    'txt': './res/icon/txt_icon.png',
+    'doc': './res/icon/pdf_icon.png',
+    'docx': './res/icon/pdf_icon.png',
+    'pdf': './res/icon/pdf_icon.png',
+    'zip': './res/icon/zip_icon.png',
+    'rar': './res/icon/zip_icon.png',
+    'exe': './res/icon/exe_icon.png',
+    'py': './res/icon/py_icon.png',
+    'cpp': './res/icon/cpp_icon.png',
+    'java': './res/icon/java_icon.png',
+    'html': './res/icon/h_icon.png',
+    'h': './res/icon/h_icon.png',
+    'c': './res/icon/cpp_icon.png',
 }
 
 
@@ -51,7 +51,7 @@ class DirectoryItemWidget(QWidget):
                 size_y = 30
 
         else:
-            image = QImage('./rec/icon/folder_icon.png')  # 替换成你想要的图片路径
+            image = QImage('./res/icon/folder_icon.png')  # 替换成你想要的图片路径
         pixmap = QPixmap.fromImage(image)
         scaled_pixmap = pixmap.scaled(size_x, size_y)
         icon_label.setPixmap(scaled_pixmap)

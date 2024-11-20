@@ -128,6 +128,7 @@ class Get_file(QThread):
     new_data = pyqtSignal(str)
 
     def __init__(self, name: str) -> None:
+        super().__init__()
         self.file_name = name
         return
 
