@@ -42,7 +42,7 @@ class main_win(QMainWindow, main_window):
         # self.add_dynamic_chart()
 
         # 添加图片查看器控件
-        # self.image_view = ImageView(image='res/American_Robin.jpg', background=Qt.black)
+        # self.image_view = ImageView(image='res/American_Roin.jpg', background=Qt.black)
         # self.image_view.setPixmap("res/fish.png")
         # self.verticalLayout.addWidget(self.image_view)
 

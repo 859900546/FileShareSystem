@@ -4,16 +4,24 @@ class Settings:
     DEBUG: bool = True
 
     TITLE: str = "文件管理系统"
+    with open("./config.ini", "r", encoding="utf-8") as f:
+        str_config = f.readlines()
 
+    config: dict = {}
+
+    for line in str_config:
+        t = line.strip().split("=")
+        if len(t) == 2:
+            config[t[0]] = t[1]
     # Mysql
-    MYSQL_USERNAME: str = "root"
-    MYSQL_PASSWORD: str = "root"
-    MYSQL_HOST: str = "127.0.0.1"
-    MYSQL_PORT: int = 3306
-    MYSQL_DATABASE: str = 'filesharesystem'
+    MYSQL_USERNAME: str = config["MYSQL_USERNAME"]
+    MYSQL_PASSWORD: str = config["MYSQL_PASSWORD"]
+    MYSQL_HOST: str = config["MYSQL_HOST"]
+    MYSQL_PORT: int = int(config["MYSQL_PORT"])
+    MYSQL_DATABASE: str = config["MYSQL_DATABASE"]
 
-    ip: str = "127.0.0.1"
-    port: int = 5000
+    ip: str = config["ip"]
+    port: int = int(config["port"])
 
 
 settings = Settings()

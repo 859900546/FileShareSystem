@@ -92,16 +92,16 @@ class login_form(ui_form, QFrame):
 
     def github_pushButton_event(self):
         logger.info("跳转到github网站")
-        QMessageBox.information(self, "GitHub", "wp19991")
-        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://github.com/wp19991"))
+        QMessageBox.information(self, "GitHub", "859900546")
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://github.com/859900546"))
 
     def phone_pushButton_event(self):
         logger.info("手机号")
-        QMessageBox.information(self, "手机号", "手机号\n13170190193")
+        QMessageBox.information(self, "手机号", "手机号\n1807602575")
 
     def email_pushButton_event(self):
         logger.info("邮箱")
-        QMessageBox.information(self, "邮箱", "邮箱\nwpycahrm@outlook.com")
+        QMessageBox.information(self, "邮箱", "邮箱\n859900546@qq.com")
 
     def mousePressEvent(self, e: QMouseEvent):
         if e.button() == Qt.LeftButton:

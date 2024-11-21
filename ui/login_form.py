@@ -81,7 +81,7 @@ class Ui_Frame(object):
         self.widget.setObjectName("widget")
         self.label = QtWidgets.QLabel(self.widget)
         self.label.setGeometry(QtCore.QRect(40, 30, 280, 430))
-        self.label.setStyleSheet("border-image: url(:/img/image/American_Robin.jpg);\n"
+        self.label.setStyleSheet("border-image: url(./res/image/American_Robin.jpg);\n"
 "border-top-left-radius:50px;")
         self.label.setObjectName("label")
         self.label_2 = QtWidgets.QLabel(self.widget)
@@ -244,7 +244,7 @@ class Ui_Frame(object):
     def retranslateUi(self, Frame):
         _translate = QtCore.QCoreApplication.translate
         Frame.setWindowTitle(_translate("Frame", "登录"))
-        self.label.setText(_translate("Frame", "TextLabel"))
+        self.label.setText(_translate("Frame", ""))
         self.label_4.setText(_translate("Frame", "登录界面"))
         self.user_name_lineEdit.setPlaceholderText(_translate("Frame", "用户名"))
         self.password_lineEdit.setPlaceholderText(_translate("Frame", "密码"))
