@@ -50,6 +50,7 @@ async def handle_client(websocket, path):
             elif 'DELfile' in message[0]:  # 删除文件
                 await server_fun.handle_deletefile(websocket, message[1])
                 try:
+                    print(message[1])
                     file = File(message[1])
                     file.delete_file(db_conn)  # 删除文件信息
                 except Exception as e:

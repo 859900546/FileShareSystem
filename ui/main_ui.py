@@ -74,6 +74,8 @@ class MainWindow(QMainWindow):
         self.Heartbert.delay = 2
         self.Heartbert_cnt = 0
 
+        self.username = ""
+
     # self.download_file_signal.connect(self.download_file_signal_slot)
 
     #        self.websock = websocket_client.websock()

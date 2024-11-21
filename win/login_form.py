@@ -9,7 +9,7 @@ from ui.main_ui import MainWindow
 from win.register_form import register_form
 from Websocket_filesystem import websocket_client
 from pointStruct.analysis_data import os_id
-
+import pointStruct.analysis_data
 
 class login_form(ui_form, QFrame):
     def __init__(self, parent: QMainWindow = None):
@@ -78,6 +78,7 @@ class login_form(ui_form, QFrame):
         self.window = MainWindow()
         self.window.Heartbert.delay = 3
         self.window.init()
+        pointStruct.analysis_data.user_name = self.user_name
         self.close()
         self.window.show()
         QMessageBox.information(self, f"登录成功", f"欢迎用户：{self.user_name}\n")

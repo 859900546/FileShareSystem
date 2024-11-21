@@ -4,8 +4,6 @@ from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QFrame, QMessageBox
 #from loguru import logger
 from ui.register_form import Ui_Frame as ui_form
-from database.User import User
-from database.mysqlOperator import create_db_connection
 from pointStruct.analysis_data import os_id
 from Websocket_filesystem import websocket_client
 
@@ -63,7 +61,7 @@ class register_form(ui_form, QFrame):
 
     def github_pushButton_event(self):
         #logger.info("跳转到github网站")
-        QMessageBox.information(self, "GitHub", "wp19991")
+        QMessageBox.information(self, "GitHub", "85990546")
         QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://github.com/859900546/FileShareSystem"))
 
     def phone_pushButton_event(self):

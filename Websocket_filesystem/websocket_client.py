@@ -160,7 +160,7 @@ class Post_file(QThread):
         if not ws.connected:
             start_ws()
         try:
-            ws.send(f'POSTfile:,{self.total_chunks},{self.RelativePath},{os_id}')
+            ws.send(f'POSTfile:,{self.total_chunks},{self.RelativePath},{os_id}_{username}')
             s = ws.recv()
         except Exception as e:
             print(e)
@@ -241,7 +241,7 @@ class create_file(QThread):
         if not ws.connected:
             start_ws()
         try:
-            ws.send(f'CREfile:,{self.name},{os_id}')
+            ws.send(f'CREfile:,{self.name},{os_id}_{username}')
             s = ws.recv()
             print(s)
         except Exception as e:

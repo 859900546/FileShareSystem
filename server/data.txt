@@ -53,11 +53,7 @@
 - 11,0,2023-12-24 19:03:34,0,system
   - V HUB.lnk,1,2024-11-10 18:14:33,24,system
   - common-gun.txt,1,2024-11-14 10:20:28,1,system
-- AggregatorHost.exe,1,2024-11-10 22:20:40,65,system
 - 6618寝室公约.docx,1,2024-11-11 16:33:36,15,system
-- Test.EXE,1,2024-11-13 22:52:05,6699,system
-- log.mp4,1,2024-11-13 23:46:58,9,system
-- 推理学习交流-离线版本.rar,1,2024-11-14 10:36:05,80478,system
 - jpg,0,2024-11-15 10:21:17,0,system
   - mp3_icon.png,1,2024-11-15 10:20:14,364,system
   - mp4_icon.png,1,2024-11-15 10:20:14,448,system
@@ -71,3 +67,8 @@
   - h_icon.png,1,2024-11-15 10:20:14,406,system
   - java_icon.png,1,2024-11-15 10:20:14,707,system
   - jpg_icon.png,1,2024-11-15 10:20:14,404,system
+- main.spec,1,2024-11-21 11:16:03,1,system
+- run_log.py,1,2024-11-21 11:16:03,1,system
+- infer_class.py,1,2024-11-21 11:16:03,7,system
+- main.py,1,2024-11-21 11:16:03,3,system
+- dml_infer_gun_class.py,1,2024-11-21 11:16:03,7,system
