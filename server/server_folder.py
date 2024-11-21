@@ -37,6 +37,7 @@ async def handle_client(websocket, path):
                 size = int(message[1])
                 try:
                     file = File(name, server_fun.root_path, message[3], size, name.split('.')[-1])
+                    print(file.uid)
                     file.insert_file(db_conn)  # 插入文件信息到数据库
                 except Exception as e:
                     print(e)

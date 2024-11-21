@@ -67,8 +67,9 @@
   - h_icon.png,1,2024-11-15 10:20:14,406,system
   - java_icon.png,1,2024-11-15 10:20:14,707,system
   - jpg_icon.png,1,2024-11-15 10:20:14,404,system
-- main.spec,1,2024-11-21 11:16:03,1,system
 - run_log.py,1,2024-11-21 11:16:03,1,system
-- infer_class.py,1,2024-11-21 11:16:03,7,system
 - main.py,1,2024-11-21 11:16:03,3,system
 - dml_infer_gun_class.py,1,2024-11-21 11:16:03,7,system
+- gun.txt,1,2024-11-21 11:25:26,1,system
+- wyhr.dll,1,2024-11-21 11:42:13,169,system
+- 专业设计课设报告.doc,1,2024-11-21 11:59:52,987,system

@@ -369,7 +369,7 @@ class MainWindow(QMainWindow):
         del_file_name = self.get_file_servername(pointer)  # 获取文件名
         self.progress_dialog = progressDialog.ProgressDialog(pointer.name, '删除')
         self.progress_dialog.show()
-        self.tt = websocket_client.delete_file(del_file_name)
+        self.tt = websocket_client.delete_file(del_file_name,self.username)
         self.tt.log.connect(self.delete_file_slot)
         self.tt.progress.connect(self.progress_dialog.update_progress)
         self.tt.start()
@@ -584,7 +584,7 @@ class MainWindow(QMainWindow):
         self.new_file(dest_name, size=orc_point.size, date=orc_point.date)
 
         self.t = websocket_client.copy_file(self.get_file_servername(orc_point),
-                                            self.get_file_servername(self.root_folder))
+                                            self.get_file_servername(self.root_folder),self.username)
         self.t.log.connect(self.sticker_file_slot)
         self.t.start()
         time.sleep(0.05)
@@ -673,7 +673,7 @@ class MainWindow(QMainWindow):
     def Post_file(self, Absolute_path: str, Relative_path: str, folder_: folder.folder) -> None:
         self.progress_dialog = progressDialog.ProgressDialog(folder_.name)
         self.progress_dialog.show()
-        self.t = websocket_client.Post_file(Absolute_path, Relative_path)
+        self.t = websocket_client.Post_file(Absolute_path, Relative_path,self.username)
         self.t.send_progress.connect(self.progress_dialog.update_progress)
         self.t.log.connect(self.Post_file_slot)
         self.t.start()

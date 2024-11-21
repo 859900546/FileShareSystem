@@ -4,7 +4,7 @@ from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QFrame, QMessageBox
 #from loguru import logger
 from ui.register_form import Ui_Frame as ui_form
-from pointStruct.analysis_data import os_id
+from pointStruct.analysis_data import get_userid
 from Websocket_filesystem import websocket_client
 
 
@@ -48,7 +48,7 @@ class register_form(ui_form, QFrame):
             QMessageBox.information(self, "错误提示", "两次密码输入不对，请重新输入")
             return
 
-        self.t = websocket_client.Register(user_name, password, user_name + "_" + os_id)
+        self.t = websocket_client.Register(user_name, password, get_userid(user_name))
         self.t.start()
         self.t.log.connect(self.register_success_event)
 

@@ -124,16 +124,17 @@ class Post_folder(QThread):
 class Get_file(QThread):
     new_data = pyqtSignal(str)
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str,username: str) -> None:
         super().__init__()
         self.file_name = name
+        self.username = username
         return
 
     def run(self):
         if not ws.connected:
             start_ws()
         try:
-            ws.send(f'GETfile:{self.file_name},{os_id}')
+            ws.send(f'GETfile:{self.file_name},{get_userid(username=self.username)}')
             s = ws.recv()
             self.new_data.emit(s)
         except Exception as e:
@@ -144,13 +145,14 @@ class Post_file(QThread):
     send_progress = pyqtSignal(float)
     log = pyqtSignal(bool)
 
-    def __init__(self, AbsolutePath: str, RelativePath: str) -> None:
+    def __init__(self, AbsolutePath: str, RelativePath: str, username: str) -> None:
         super().__init__()
         self.file = AbsolutePath
         self.RelativePath = RelativePath
         self.total_chunks = 0
         self.chunk_size = 0
         self.file_size = 0
+        self.username = username
         return
 
     def run(self):
@@ -160,7 +162,7 @@ class Post_file(QThread):
         if not ws.connected:
             start_ws()
         try:
-            ws.send(f'POSTfile:,{self.total_chunks},{self.RelativePath},{os_id}_{username}')
+            ws.send(f'POSTfile:,{self.total_chunks},{self.RelativePath},{get_userid(username=self.username)}')
             s = ws.recv()
         except Exception as e:
             print(e)
@@ -232,16 +234,17 @@ class download_file(QThread):
 
 class create_file(QThread):
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, username: str) -> None:
         super().__init__()
         self.name = name
+        self.username = username
         return
 
     def run(self):
         if not ws.connected:
             start_ws()
         try:
-            ws.send(f'CREfile:,{self.name},{os_id}_{username}')
+            ws.send(f'CREfile:,{self.name},{get_userid(self.username)}')
             s = ws.recv()
             print(s)
         except Exception as e:
@@ -252,16 +255,17 @@ class delete_file(QThread):
     log = pyqtSignal(bool)
     progress = pyqtSignal(float)
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, username: str) -> None:
         super().__init__()
         self.name = name
+        self.username = username
         return
 
     def run(self):
         if not ws.connected:
             start_ws()
         try:
-            ws.send(f'DELfile:,{self.name},{os_id}')
+            ws.send(f'DELfile:,{self.name},{get_userid(self.username)}')
             s = ws.recv()
             print(s)
             self.log.emit(True)
@@ -275,17 +279,18 @@ class delete_file(QThread):
 class copy_file(QThread):
     log = pyqtSignal(bool)
 
-    def __init__(self, path: str, dest_path: str) -> None:
+    def __init__(self, path: str, dest_path: str, username: str) -> None:
         super().__init__()
         self.name = get_file_serverName(path)
         self.new_name = get_file_serverName(dest_path)
+        self.username = username
         return
 
     def run(self):
         if not ws.connected:
             start_ws()
         try:
-            ws.send(f'COPYfile:,{self.name},{self.new_name},{os_id}')
+            ws.send(f'COPYfile:,{self.name},{self.new_name},{get_userid(self.username)}')
             s = ws.recv()
             print(s)
             self.log.emit(True)
@@ -297,17 +302,18 @@ class copy_file(QThread):
 class rename_file(QThread):
     log = pyqtSignal(bool)
 
-    def __init__(self, path: str, new_name: str) -> None:
+    def __init__(self, path: str, new_name: str, username: str) -> None:
         super().__init__()
         self.name = get_file_serverName(path)
         self.new_name = new_name
+        self.username = username
         return
 
     def run(self):
         if not ws.connected:
             start_ws()
         try:
-            ws.send(f'RENfile:,{self.name},{self.new_name},{os_id}')
+            ws.send(f'RENfile:,{self.name},{self.new_name},{get_userid(self.username)}')
             s = ws.recv()
             print(s)
             self.log.emit(True)

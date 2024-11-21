@@ -17,7 +17,10 @@ def get_machine_code():
 
 
 os_id = get_machine_code()
-username = "admin"
+
+
+def get_userid(username):
+    return os_id + "_" + username
 
 # 读取
 def read_folder_structure(file_path, indent_size=2):

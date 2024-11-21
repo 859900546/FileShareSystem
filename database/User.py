@@ -29,8 +29,8 @@ class User:
 
     def login(self, db_connection):
         cursor = db_connection.cursor()
-        query = "SELECT * FROM user_ WHERE uid = %s AND upassword = %s"
-        values = (self.uid, self.upassword)
+        query = "SELECT * FROM user_ WHERE uname = %s AND upassword = %s"
+        values = (self.uname, self.upassword)
         cursor.execute(query, values)
         result = cursor.fetchone()
         cursor.close()
