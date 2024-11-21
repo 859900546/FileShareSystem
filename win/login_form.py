@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QMouseEvent
 
 from PyQt5.QtWidgets import QFrame, QMainWindow, QApplication, QMessageBox
-from loguru import logger
+#from loguru import logger
 from ui.login_form import Ui_Frame as ui_form
 from ui.main_ui import MainWindow
 from win.register_form import register_form
@@ -46,19 +46,20 @@ class login_form(ui_form, QFrame):
 
     # 关闭的逻辑
     def close_event(self):
-        logger.info("关闭登录窗口")
+        #logger.info("关闭登录窗口")
         # 退出应用程序
         QApplication.instance().quit()
 
     # 数据库
     def mysql_pushButton_event(self):
-        logger.info("数据库窗口")
+        return
+       # logger.info("数据库窗口")
 
     # self.mysql_form = mysql_form()
     #  self.mysql_form.show()
 
     def login_pushButton_event(self):
-        logger.info("用户登录")
+        #logger.info("用户登录")
         # 登录的逻辑写在这里
         user_name = self.user_name_lineEdit.text()
         password = self.password_lineEdit.text()
@@ -82,25 +83,25 @@ class login_form(ui_form, QFrame):
         QMessageBox.information(self, f"登录成功", f"欢迎用户：{self.user_name}\n")
 
     def forget_password_pushButton_event(self):
-        logger.info("忘记密码")
+        #logger.info("忘记密码")
         QMessageBox.information(self, "忘记密码", "请联系管理员admin")
 
     def register_pushButton_event(self):
-        logger.info("用户注册")
+        #logger.info("用户注册")
         self.register_form = register_form()
         self.register_form.show()
 
     def github_pushButton_event(self):
-        logger.info("跳转到github网站")
+        #logger.info("跳转到github网站")
         QMessageBox.information(self, "GitHub", "859900546")
         QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://github.com/859900546"))
 
     def phone_pushButton_event(self):
-        logger.info("手机号")
+        #logger.info("手机号")
         QMessageBox.information(self, "手机号", "手机号\n1807602575")
 
     def email_pushButton_event(self):
-        logger.info("邮箱")
+        #logger.info("邮箱")
         QMessageBox.information(self, "邮箱", "邮箱\n859900546@qq.com")
 
     def mousePressEvent(self, e: QMouseEvent):

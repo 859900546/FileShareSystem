@@ -1,6 +1,6 @@
 import os
-from loguru import logger
-from utils import global_var as gl, logs
+#from loguru import logger
+#from utils import global_var as gl, logs
 from win.login_form import login_form
 from win.splash.splash import SplashScreen
 import sys
@@ -17,7 +17,7 @@ class App(QApplication):
         self.windows = {}
 
     def run(self, pytest=False):
-        logger.info("程序启动 ...")
+        #   logger.info("程序启动 ...")
         websocket_client.start_ws()  # 启动websocket
 
         splash = SplashScreen()  # 启动界面
@@ -35,6 +35,6 @@ class App(QApplication):
 
 
 if __name__ == "__main__":
-    logs.setting()  # log 设置
-    gl.__init()  # 全局变量
+    #    logs.setting()  # log 设置
+    #gl.__init()  # 全局变量
     App().run()

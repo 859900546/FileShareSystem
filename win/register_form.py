@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QFrame, QMessageBox
-from loguru import logger
+#from loguru import logger
 from ui.register_form import Ui_Frame as ui_form
 from database.User import User
 from database.mysqlOperator import create_db_connection
@@ -37,12 +37,12 @@ class register_form(ui_form, QFrame):
 
     # 关闭的逻辑
     def close_event(self):
-        logger.info("关闭登录窗口")
+        #logger.info("关闭登录窗口")
         # 退出应用程序
         self.close()
 
     def register_pushButton_event(self):
-        logger.info("用户注册")
+        #logger.info("用户注册")
         user_name = self.user_name_lineEdit.text()
         password = self.password_lineEdit.text()
         password2 = self.password2_lineEdit.text()
@@ -62,16 +62,16 @@ class register_form(ui_form, QFrame):
         self.close()
 
     def github_pushButton_event(self):
-        logger.info("跳转到github网站")
+        #logger.info("跳转到github网站")
         QMessageBox.information(self, "GitHub", "wp19991")
         QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://github.com/859900546/FileShareSystem"))
 
     def phone_pushButton_event(self):
-        logger.info("手机号")
+        #logger.info("手机号")
         QMessageBox.information(self, "手机号", "手机号\n1807602575")
 
     def email_pushButton_event(self):
-        logger.info("邮箱")
+        #logger.info("邮箱")
         QMessageBox.information(self, "邮箱", "邮箱\n859900546@qq.com")
 
     def mousePressEvent(self, e: QMouseEvent):
